@@ -3,78 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Điều khiển - Đấu trường 100</title>
+    <title>Bảng Điều Khiển - Đấu Trường 100</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f4f9; padding: 20px; }
-        .control-panel { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #333; }
-        .form-group { margin-bottom: 20px; }
-        label { font-weight: bold; display: block; margin-bottom: 5px; color: #555; }
-        textarea, input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
-        textarea { resize: vertical; height: 80px; }
-        .btn { display: block; width: 100%; padding: 15px; background: #4a2e5d; color: white; border: none; border-radius: 5px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s;}
-        .btn:hover { background: #351a66; }
-        .live-status { text-align: center; margin-top: 15px; color: green; font-weight: bold; display: none; }
+        :root { --primary: #6a1b9a; --danger: #d32f2f; --success: #388e3c; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f5f9; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .panel { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .full-width { grid-column: span 2; }
+        h2 { font-size: 18px; color: #4a148c; margin-bottom: 12px; border-bottom: 2px solid #eee; padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center;}
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+        input[type="text"], input[type="number"], textarea { width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; }
+        textarea { height: 50px; }
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+        .btn { padding: 9px 14px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; background: #555; transition: 0.2s; }
+        .btn:hover { opacity: 0.9; }
+        .btn-primary { background: var(--primary); }
+        .btn-success { background: var(--success); }
+        .btn-danger { background: var(--danger); }
+        .btn-info { background: #0288d1; }
+        .btn-warning { background: #f57c00; }
+        .btn-dark { background: #333; }
+        .status-badge { font-size: 13px; background: #e1bee7; color: #4a148c; padding: 3px 10px; border-radius: 12px; }
+        .lifeline-toggle { display: flex; gap: 8px; }
+        .lifeline-btn { flex: 1; padding: 8px; border: 2px solid #ccc; background: #fff; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; }
+        .lifeline-btn.active { background: #e8f5e9; border-color: var(--success); color: var(--success); }
     </style>
 </head>
 <body>
 
-    <div class="control-panel">
-        <h2>🎮 BẢNG ĐIỀU KHIỂN</h2>
-        
-        <div class="form-group">
-            <label>Nội dung câu hỏi:</label>
-            <textarea id="ctrl-question" placeholder="Nhập câu hỏi vào đây..."></textarea>
+    <div class="container">
+        <!-- 1. CHỦ ĐỀ -->
+        <div class="panel full-width">
+            <h2>1. MÀN HÌNH CHỦ ĐỀ (HÌNH 3)</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div><label>Chủ đề 1:</label><input type="text" id="topic-1" value="ÂM NHẠC"></div>
+                <div><label>Chủ đề 2:</label><input type="text" id="topic-2" value="PHIM ẢNH"></div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="sendCmd({type: 'SHOW_TOPICS', topic1: val('topic-1'), topic2: val('topic-2')})">📺 Hiện 2 Chủ Đề</button>
+                <button class="btn btn-info" onclick="sendCmd({type: 'SELECT_TOPIC', index: 1})">👉 Chọn Chủ Đề 1</button>
+                <button class="btn btn-info" onclick="sendCmd({type: 'SELECT_TOPIC', index: 2})">👉 Chọn Chủ Đề 2</button>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Đáp án A:</label>
-            <input type="text" id="ctrl-ans-a" placeholder="Nội dung đáp án A">
+        <!-- 2. CÂU HỎI -->
+        <div class="panel full-width">
+            <h2>2. NỘI DUNG CÂU HỎI <span class="status-badge" id="player-count-badge">Còn 100 Người</span></h2>
+            <div class="form-group"><label>Câu hỏi:</label><textarea id="q-text">Nhà soạn nhạc Beethoven sinh ra ở quốc gia nào?</textarea></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                <div><label>Đáp án A:</label><input type="text" id="q-a" value="Áo"></div>
+                <div><label>Đáp án B:</label><input type="text" id="q-b" value="Đức"></div>
+                <div><label>Đáp án C:</label><input type="text" id="q-c" value="Pháp"></div>
+            </div>
+            <div class="form-group" style="margin-top: 8px;">
+                <label>Đáp án đúng:</label>
+                <label><input type="radio" name="correct" value="A"> A</label> &nbsp;
+                <label><input type="radio" name="correct" value="B" checked> B</label> &nbsp;
+                <label><input type="radio" name="correct" value="C"> C</label>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="loadQuestion()">📥 Nạp Dữ Liệu Câu Hỏi</button>
+                <button class="btn btn-warning" onclick="sendCmd({type: 'SHOW_HEADER'})">🏷️ Hiện Header (1 Đấu N & Trợ Giúp)</button>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Đáp án B:</label>
-            <input type="text" id="ctrl-ans-b" placeholder="Nội dung đáp án B">
+        <!-- 3. ANIMATION HIỂN THỊ -->
+        <div class="panel">
+            <h2>3. HIỂN THỊ CÂU HỎI & ĐÁP ÁN</h2>
+            <div class="btn-group" style="flex-direction: column;">
+                <button class="btn btn-primary" onclick="sendCmd({type: 'SHOW_QUESTION'})">⬆️ Hiện Câu Hỏi (Wipe Up)</button>
+                <button class="btn btn-info" onclick="sendCmd({type: 'SHOW_ANSWER', key: 'ALL'})">⬇️ Hiện Lần Lượt 3 Đáp Án (Wipe Down)</button>
+            </div>
+            <label style="margin-top: 10px;">Bật/Tắt Quyền Trợ Giúp:</label>
+            <div class="lifeline-toggle">
+                <div class="lifeline-btn" id="ll-btn-25" onclick="toggleLifeline('25')">25%</div>
+                <div class="lifeline-btn" id="ll-btn-50" onclick="toggleLifeline('50')">50%</div>
+                <div class="lifeline-btn" id="ll-btn-75" onclick="toggleLifeline('75')">75%</div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Đáp án C:</label>
-            <input type="text" id="ctrl-ans-c" placeholder="Nội dung đáp án C">
+        <!-- 4. CHỌN & CÔNG BỐ -->
+        <div class="panel">
+            <h2>4. CHỌN & CÔNG BỐ ĐÁP ÁN</h2>
+            <label>Người chơi chính chọn:</label>
+            <div class="btn-group" style="margin-bottom: 12px;">
+                <button class="btn btn-warning" onclick="playerSelect('A')">Chọn A</button>
+                <button class="btn btn-warning" onclick="playerSelect('B')">Chọn B</button>
+                <button class="btn btn-warning" onclick="playerSelect('C')">Chọn C</button>
+            </div>
+            <button class="btn btn-success" style="width:100%; padding:10px;" onclick="revealResult()">✅ CÔNG BỐ ĐÁP ÁN ĐÚNG</button>
         </div>
 
-        <button class="btn" onclick="updateDisplay()">🚀 CẬP NHẬT LÊN MÀN HÌNH</button>
-        <p class="live-status" id="status-msg">Đã cập nhật thành công!</p>
+        <!-- 5. ĐẾM LOẠI -->
+        <div class="panel full-width">
+            <h2>5. HIỂN THỊ SỐ NGƯỜI TRẢ LỜI SAI (HÌNH 1 & HÌNH 2)</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center;">
+                <div>
+                    <label>Số người trả lời sai ở màn này:</label>
+                    <div style="display: flex; gap: 6px;">
+                        <input type="number" id="wrong-count" value="0" min="0" max="100">
+                        <button class="btn btn-info" onclick="randomWrong()">🎲 Random</button>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="sendCmd({type: 'SHOW_ZERO_CARD'})">🟪 Hiện Số 0 Tím (Hình 1)</button>
+                    <button class="btn btn-danger" onclick="startElimination()">🟥 Đếm Loại & Đổi Đỏ (Hình 2)</button>
+                    <button class="btn btn-dark" onclick="sendCmd({type: 'HIDE_COUNTER'})">✖️ Ẩn Màn Đếm</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel full-width" style="text-align: center; background: #fff3e0;">
+            <button class="btn btn-danger" onclick="resetAll()">🔄 RESET TOÀN BỘ GAME (100 NGƯỜI SỐNG)</button>
+        </div>
     </div>
 
     <script>
-        // Lấy dữ liệu cũ nếu có (để admin không phải gõ lại nếu lỡ F5)
-        window.onload = () => {
-            const data = JSON.parse(localStorage.getItem('dt100_data'));
-            if(data) {
-                document.getElementById('ctrl-question').value = data.question || "";
-                document.getElementById('ctrl-ans-a').value = data.ansA || "";
-                document.getElementById('ctrl-ans-b').value = data.ansB || "";
-                document.getElementById('ctrl-ans-c').value = data.ansC || "";
-            }
-        };
+        let selectedChoice = null;
+        let lifelines = { '25': false, '50': false, '75': false };
 
-        function updateDisplay() {
-            // Lấy dữ liệu từ input
-            const data = {
-                question: document.getElementById('ctrl-question').value,
-                ansA: document.getElementById('ctrl-ans-a').value,
-                ansB: document.getElementById('ctrl-ans-b').value,
-                ansC: document.getElementById('ctrl-ans-c').value,
-            };
+        function val(id) { return document.getElementById(id).value; }
+        function sendCmd(cmdObj) { cmdObj.timestamp = Date.now(); localStorage.setItem('dt100_cmd', JSON.stringify(cmdObj)); }
 
-            // Lưu vào localStorage, hành động này sẽ trigger sự kiện 'storage' bên tab display.html
-            localStorage.setItem('dt100_data', JSON.stringify(data));
-
-            // Hiển thị thông báo thành công
-            const status = document.getElementById('status-msg');
-            status.style.display = 'block';
-            setTimeout(() => { status.style.display = 'none'; }, 2000);
+        function updateBadge() {
+            let players = JSON.parse(localStorage.getItem('dt100_players')) || Array(100).fill(true);
+            let alive = players.filter(p => p === true).length;
+            document.getElementById('player-count-badge').innerText = 'Còn ' + alive + ' Người';
         }
+
+        function loadQuestion() {
+            const data = {
+                question: val('q-text'), ansA: val('q-a'), ansB: val('q-b'), ansC: val('q-c'),
+                correct: document.querySelector('input[name="correct"]:checked').value
+            };
+            selectedChoice = null;
+            sendCmd({ type: 'LOAD_QUESTION', data: data });
+        }
+
+        function toggleLifeline(val) {
+            lifelines[val] = !lifelines[val];
+            document.getElementById('ll-btn-' + val).classList.toggle('active', lifelines[val]);
+            sendCmd({ type: 'TOGGLE_LIFELINE', value: val, status: lifelines[val] });
+        }
+
+        function playerSelect(choice) {
+            selectedChoice = choice;
+            sendCmd({ type: 'PLAYER_SELECT', choice: choice });
+        }
+
+        function revealResult() {
+            const correctKey = document.querySelector('input[name="correct"]:checked').value;
+            sendCmd({ type: 'REVEAL_RESULT', correct: correctKey, chosen: selectedChoice });
+        }
+
+        function randomWrong() {
+            let players = JSON.parse(localStorage.getItem('dt100_players')) || Array(100).fill(true);
+            let alive = players.filter(p => p === true).length;
+            if (alive === 0) return alert('Đã loại hết!');
+            let maxElim = Math.min(alive, Math.max(1, Math.floor(alive * 0.4)));
+            document.getElementById('wrong-count').value = Math.floor(Math.random() * maxElim) + 1;
+        }
+
+        function startElimination() {
+            let count = parseInt(val('wrong-count')) || 0;
+            sendCmd({ type: 'RUN_ELIMINATION', count: count });
+            setTimeout(updateBadge, (count * 350) + 1000);
+        }
+
+        function resetAll() {
+            if (confirm("Reset 100 người về ban đầu?")) {
+                sendCmd({ type: 'RESET_ALL' });
+                setTimeout(updateBadge, 500);
+            }
+        }
+        window.onload = updateBadge;
     </script>
 </body>
 </html>
