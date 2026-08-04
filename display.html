@@ -3,74 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Show Controller & Display</title>
-    <!-- Thư viện đọc/ghi file Excel -->
-    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <title>Game Show - Display</title>
     <style>
-        /* Ép phông chữ Bahnschrift toàn bộ ứng dụng */
         * {
             box-sizing: border-box;
-            font-family: 'Bahnschrift', 'Segoe UI Custom', 'Segoe UI', sans-serif !important;
+            font-family: 'Bahnschrift', 'Segoe UI', sans-serif !important;
             margin: 0;
             padding: 0;
         }
 
         body {
-            background-color: #0f081d;
-            color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Nav Tabs để chuyển đổi giữa Control Panel & Display */
-        .nav-bar {
-            background: #1a0f2e;
-            padding: 10px 20px;
-            display: flex;
-            gap: 10px;
-            border-bottom: 2px solid #321b59;
-        }
-
-        .nav-btn {
-            background: #2a1848;
-            color: #fff;
-            border: 1px solid #5a329e;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .nav-btn.active {
-            background: #7321a9;
-            border-color: #a855f7;
-        }
-
-        .view-section {
-            display: none;
-            flex: 1;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .view-section.active {
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ================= DISPLAY VIEW STYLES ================= */
-        #display-view {
             background: radial-gradient(circle at center, #2e1254 0%, #0d0618 100%);
+            color: #ffffff;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* 1. TOPIC SELECTION ANIMATIONS */
+        /* 1. KHU VỰC CHỦ ĐỀ */
         .topics-container {
             display: flex;
-            gap: 20px;
+            gap: 25px;
             justify-content: center;
             align-items: center;
             width: 100%;
@@ -82,34 +38,33 @@
             background: linear-gradient(135deg, #6b21a8, #3b0764);
             border: 3px solid #c084fc;
             border-radius: 20px;
-            padding: 30px 50px;
-            font-size: 2rem;
+            padding: 35px 55px;
+            font-size: 2.2rem;
             font-weight: bold;
             text-align: center;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
         }
 
-        /* Trạng thái chủ đề được chọn -> Move to Center */
+        /* Chủ đề được chọn: Move to Center & Phóng to */
         .topic-card.selected {
             position: absolute;
             left: 50%;
             top: 50%;
-            transform: translate(-50%, -50%) scale(1.3);
+            transform: translate(-50%, -50%) scale(1.35);
             z-index: 10;
-            box-shadow: 0 0 40px #a855f7;
+            box-shadow: 0 0 50px #a855f7;
             background: linear-gradient(135deg, #9333ea, #581c87);
         }
 
-        /* Trạng thái chủ đề KHÔNG được chọn -> Zoom out & mờ dần */
+        /* Chủ đề không được chọn: Zoom out & Mờ dần */
         .topic-card.zoom-out {
             transform: scale(0);
             opacity: 0;
             pointer-events: none;
         }
 
-        /* 2. ELIMINATION NUMBER CARD (Giống hệt Hình 1 & Hình 2) */
+        /* 2. MÀN HÌNH BỊ LOẠI (HÌNH 1 & HÌNH 2) */
         .elimination-screen {
             display: none;
             flex-direction: column;
@@ -131,12 +86,12 @@
             transition: background-color 0.4s ease;
         }
 
-        /* Tím (Hình 1 - khi khởi tạo/mặc định) */
+        /* Tím (Khởi tạo/Hình 1) */
         .number-card.purple {
             background-color: #7321a9;
         }
 
-        /* Đỏ (Hình 2 - khi hiển thị số bị loại) */
+        /* Đỏ (Hiển thị số bị loại/Hình 2) */
         .number-card.red {
             background-color: #be0000;
         }
@@ -148,274 +103,43 @@
             line-height: 1;
             user-select: none;
         }
-
-        /* ================= CONTROLLER STYLES ================= */
-        .control-panel {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .panel-box {
-            background: #180d2b;
-            border: 1px solid #3b1d6e;
-            padding: 20px;
-            border-radius: 12px;
-        }
-
-        .panel-title {
-            font-size: 1.2rem;
-            color: #c084fc;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #3b1d6e;
-            padding-bottom: 8px;
-        }
-
-        .btn {
-            background: #6b21a8;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin: 5px 0;
-            transition: 0.2s;
-        }
-
-        .btn:hover { background: #9333ea; }
-        .btn-danger { background: #be0000; }
-        .btn-danger:hover { background: #e00000; }
-        .btn-secondary { background: #374151; }
-        .btn-secondary:hover { background: #4b5563; }
-
-        input[type="file"] { display: none; }
-        .file-label {
-            display: inline-block;
-            background: #2563eb;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .stats-info {
-            background: #0d0618;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-size: 0.95rem;
-        }
     </style>
 </head>
 <body>
 
-    <!-- NAV BAR CHUYỂN ĐỔI CHẾ ĐỘ -->
-    <div class="nav-bar">
-        <button class="nav-btn active" onclick="switchView('controller')">🎛️ Bảng Điều Khiển (Controller)</button>
-        <button class="nav-btn" onclick="switchView('display')">📺 Màn Hình Hiển Thị (Display)</button>
-        <button class="nav-btn" style="margin-left: auto;" onclick="openDisplayWindow()">↗️ Mở Màn Hình Riêng</button>
-    </div>
+    <!-- KHU VỰC CHỦ ĐỀ -->
+    <div id="topics-display" class="topics-container"></div>
 
-    <!-- MÀN HÌNH ĐIỀU KHIỂN (CONTROLLER) -->
-    <div id="controller-view" class="view-section active">
-        <div class="control-panel">
-            
-            <!-- QUẢN LÝ ĐỀ THI & EXCEL -->
-            <div class="panel-box">
-                <div class="panel-title">1. Quản Lý Đề Thi (.XLSX)</div>
-                <button class="btn btn-secondary" onclick="downloadSampleExcel()">📥 Tải File Mẫu Excel</button>
-                <br><br>
-                <label class="file-label" for="excel-input">📂 Nhập File Đề (.xlsx)</label>
-                <input type="file" id="excel-input" accept=".xlsx, .xls" onchange="importExcel(event)">
-                <div id="file-status" class="stats-info" style="margin-top:10px;">Chưa tải file đề.</div>
-            </div>
-
-            <!-- MÔ PHỎNG 100 NGƯỜI CHƠI -->
-            <div class="panel-box">
-                <div class="panel-title">2. Mô Phỏng 100 Người Chơi (IQ System)</div>
-                <button class="btn" onclick="initPlayers()">🔄 Khởi Tạo Lại 100 Người Chơi</button>
-                <div id="player-stats" class="stats-info">
-                    Đang tải dữ liệu người chơi...
-                </div>
-            </div>
-
-            <!-- ĐIỀU KHIỂN CHỦ ĐỀ -->
-            <div class="panel-box">
-                <div class="panel-title">3. Điều Khiển Chủ Đề</div>
-                <div id="topic-buttons" style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <span style="color: #888;">Hãy nhập file Excel để hiển thị danh sách chủ đề.</span>
-                </div>
-                <br>
-                <button class="btn btn-secondary" onclick="resetTopics()">↺ Reset Hiển Thị Chủ Đề</button>
-            </div>
-
-            <!-- ĐIỀU KHIỂN LOẠI NGƯỜI CHƠI -->
-            <div class="panel-box">
-                <div class="panel-title">4. Màn Hình Số Người Trả Lời Sai</div>
-                <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 10px;">
-                    Sau mỗi câu hỏi, bấm nút bên dưới để chuyển màn hình hiển thị số người bị loại (chạy ngẫu nhiên không theo nhịp).
-                </p>
-                <button class="btn btn-danger" style="font-size: 1.1rem; padding: 12px 24px;" onclick="triggerEliminationScreen()">
-                    🚨 Hiển Thị Màn Hình Số Người Bị Loại
-                </button>
-            </div>
-
+    <!-- KHU VỰC SỐ NGƯỜI BỊ LOẠI -->
+    <div id="elimination-display" class="elimination-screen">
+        <div id="number-card" class="number-card purple">
+            <span id="eliminated-count-text">0</span>
         </div>
-    </div>
-
-    <!-- MÀN HÌNH HIỂN THỊ (DISPLAY) -->
-    <div id="display-view" class="view-section">
-        
-        <!-- CONTAINER CHỦ ĐỀ -->
-        <div id="topics-display" class="topics-container">
-            <!-- Render động các chủ đề -->
-        </div>
-
-        <!-- MÀN HÌNH ĐẾM SỐ NGƯỜI BỊ LOẠI (HÌNH 1 & HÌNH 2) -->
-        <div id="elimination-display" class="elimination-screen">
-            <div id="number-card" class="number-card purple">
-                <span id="eliminated-count-text">0</span>
-            </div>
-        </div>
-
     </div>
 
     <script>
-        // Kênh đồng bộ dữ liệu giữa Controller và Màn hình Display riêng (nếu mở 2 cửa sổ)
         const channel = new BroadcastChannel('game_show_channel');
 
-        // STATE CỦA ỨNG DỤNG
-        let gameState = {
-            topics: ["Toán Học", "Khoa Học", "Lịch Sử", "Văn Học"],
-            selectedTopic: null,
-            players: [],
-            currentQuestionIndex: 0,
-            eliminatedThisRound: 0,
-            totalEliminated: 0,
-            activeScreen: 'topics' // 'topics' hoặc 'elimination'
+        // LẮNG NGHE TÍN HIỆU TỪ CONTROLLER
+        channel.onmessage = function(event) {
+            const data = event.data;
+
+            if (data.action === 'RENDER_TOPICS') {
+                renderTopics(data.topics);
+            } else if (data.action === 'SELECT_TOPIC') {
+                selectTopic(data.topicName);
+            } else if (data.action === 'RESET_TOPICS') {
+                resetTopics();
+            } else if (data.action === 'SHOW_ELIMINATION') {
+                showElimination(data.count);
+            }
         };
 
-        // KHỞI TẠO NĂM HỌC / GAME
-        window.onload = function() {
-            initPlayers();
-            renderControllerTopics();
-            renderDisplayTopics();
-        };
-
-        // 1. CHUYỂN TAB VIEW (CONTROLLER / DISPLAY)
-        function switchView(viewName) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-            
-            if (viewName === 'controller') {
-                document.getElementById('controller-view').classList.add('active');
-                document.querySelectorAll('.nav-btn')[0].classList.add('active');
-            } else {
-                document.getElementById('display-view').classList.add('active');
-                document.querySelectorAll('.nav-btn')[1].classList.add('active');
-            }
-        }
-
-        function openDisplayWindow() {
-            window.open(window.location.href, '_blank', 'width=1280,height=720');
-        }
-
-        // 2. TẠO 100 NGƯỜI CHƠI VỚI IQ NGẪU NHIÊN
-        function initPlayers() {
-            gameState.players = [];
-            // 1 người chơi có IQ vượt trội (170 - 195)
-            const topIQ = Math.floor(Math.random() * (195 - 170 + 1)) + 170;
-            gameState.players.push({ id: 1, iq: topIQ, status: 'active' });
-
-            // 99 người còn lại có IQ bình thường (85 - 140)
-            for (let i = 2; i <= 100; i++) {
-                const iq = Math.floor(Math.random() * (140 - 85 + 1)) + 85;
-                gameState.players.push({ id: i, iq: iq, status: 'active' });
-            }
-
-            gameState.totalEliminated = 0;
-            gameState.eliminatedThisRound = 0;
-
-            // Xáo trộn mảng
-            gameState.players.sort(() => Math.random() - 0.5);
-
-            updatePlayerStatsUI();
-            syncState();
-        }
-
-        function updatePlayerStatsUI() {
-            const activeCount = gameState.players.filter(p => p.status === 'active').length;
-            const topPlayer = gameState.players.reduce((max, p) => p.iq > max.iq ? p : max, gameState.players[0]);
-            
-            document.getElementById('player-stats').innerHTML = `
-                • Tổng số người chơi: <b>100</b><br>
-                • Đang còn lại: <b style="color:#4ade80">${activeCount}</b> | Đã bị loại: <b style="color:#f87171">${gameState.totalEliminated}</b><br>
-                • Người có IQ cao nhất: <b>IQ ${topPlayer.iq}</b> (${topPlayer.status === 'active' ? 'Còn thi đấu' : 'Đã bị loại'})
-            `;
-        }
-
-        // 3. TẠO FILE MẪU & NHẬP EXCEL (.XLSX)
-        function downloadSampleExcel() {
-            const data = [
-                ["STT", "Chủ đề", "Câu hỏi", "Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D", "Đáp án đúng", "Độ khó (1-100)"],
-                [1, "Toán Học", "1 + 1 bằng mấy?", "1", "2", "3", "4", "B", 10],
-                [2, "Khoa Học", "Nước sôi ở bao nhiêu độ C?", "50°C", "80°C", "100°C", "120°C", "C", 20],
-                [3, "Lịch Sử", "Năm 1945 có sự kiện gì?", "Cách mạng Tháng 8", "Chiến dịch Điện Biên Phủ", "Đổi mới", "Giải phóng miền Nam", "A", 30]
-            ];
-
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "DeThiSample");
-            XLSX.writeFile(wb, "Mau_De_Thi_GameShow.xlsx");
-        }
-
-        function importExcel(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
-
-                // Trích xuất danh sách chủ đề duy nhất từ file Excel
-                const extractedTopics = [...new Set(jsonData.map(row => row["Chủ đề"]).filter(Boolean))];
-                if (extractedTopics.length > 0) {
-                    gameState.topics = extractedTopics;
-                    renderControllerTopics();
-                    renderDisplayTopics();
-                    document.getElementById('file-status').innerHTML = `✅ Đã tải ${jsonData.length} câu hỏi. Danh sách chủ đề: <b>${extractedTopics.join(', ')}</b>`;
-                } else {
-                    document.getElementById('file-status').innerText = "⚠️ File không đúng định dạng cột [Chủ đề].";
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        // 4. HIỂN THỊ CÁC CHỦ ĐỀ & HIỆU ỨNG (MOVE TO CENTER / ZOOM OUT)
-        function renderControllerTopics() {
-            const container = document.getElementById('topic-buttons');
-            container.innerHTML = '';
-            gameState.topics.forEach(topic => {
-                const btn = document.createElement('button');
-                btn.className = 'btn';
-                btn.innerText = topic;
-                btn.onclick = () => selectTopic(topic);
-                container.appendChild(btn);
-            });
-        }
-
-        function renderDisplayTopics() {
+        function renderTopics(topics) {
+            showScreen('topics');
             const container = document.getElementById('topics-display');
             container.innerHTML = '';
-            gameState.topics.forEach(topic => {
+            topics.forEach(topic => {
                 const card = document.createElement('div');
                 card.className = 'topic-card';
                 card.dataset.topic = topic;
@@ -425,10 +149,7 @@
         }
 
         function selectTopic(topicName) {
-            gameState.selectedTopic = topicName;
-            gameState.activeScreen = 'topics';
-
-            // Áp dụng animation trên Display
+            showScreen('topics');
             const cards = document.querySelectorAll('.topic-card');
             cards.forEach(card => {
                 if (card.dataset.topic === topicName) {
@@ -439,76 +160,28 @@
                     card.classList.add('zoom-out');
                 }
             });
-
-            syncState();
         }
 
         function resetTopics() {
-            gameState.selectedTopic = null;
-            gameState.activeScreen = 'topics';
-            document.getElementById('topics-display').style.display = 'flex';
-            document.getElementById('elimination-display').style.display = 'none';
-
+            showScreen('topics');
             const cards = document.querySelectorAll('.topic-card');
             cards.forEach(card => {
                 card.classList.remove('selected', 'zoom-out');
             });
-
-            syncState();
         }
 
-        // 5. MÀN HÌNH ĐẾM SỐ NGƯỜI BỊ LOẠI (HÌNH 1 & HÌNH 2) - KHÔNG THEO NHỊP
-        function triggerEliminationScreen() {
-            // Giả lập mô phỏng số người trả lời sai ở câu hiện tại dựa trên IQ
-            simulateRoundElimination();
-
-            gameState.activeScreen = 'elimination';
-            syncState();
-            runEliminationAnimation(gameState.eliminatedThisRound);
-        }
-
-        function simulateRoundElimination() {
-            const activePlayers = gameState.players.filter(p => p.status === 'active');
-            if (activePlayers.length === 0) return;
-
-            // Tỷ lệ loại ngẫu nhiên trong khoảng 5% đến 25% số người còn lại
-            let eliminatedCount = Math.floor(activePlayers.length * (Math.random() * 0.2 + 0.05));
-            if (eliminatedCount === 0 && activePlayers.length > 1) eliminatedCount = 1;
-
-            // Ưu tiên loại những người có IQ thấp hơn
-            activePlayers.sort((a, b) => a.iq - b.iq);
-
-            let count = 0;
-            for (let player of activePlayers) {
-                if (count < eliminatedCount) {
-                    // Người IQ rất cao (>=170) có xác suất bị loại cực thấp
-                    if (player.iq >= 170 && Math.random() > 0.05) continue; 
-                    
-                    player.status = 'eliminated';
-                    count++;
-                }
-            }
-
-            gameState.eliminatedThisRound = count;
-            gameState.totalEliminated += count;
-            updatePlayerStatsUI();
-        }
-
-        function runEliminationAnimation(targetNumber) {
-            document.getElementById('topics-display').style.display = 'none';
-            const elimDisplay = document.getElementById('elimination-display');
+        function showElimination(targetNumber) {
+            showScreen('elimination');
             const card = document.getElementById('number-card');
             const countText = document.getElementById('eliminated-count-text');
 
-            elimDisplay.style.display = 'flex';
-
-            // Thiết lập trạng thái ban đầu: Card Tím, Số 0 (Giống Hình 1)
+            // Trạng thái ban đầu: Thẻ tím, số 0 (Hình 1)
             card.className = 'number-card purple';
             countText.innerText = '0';
 
             if (targetNumber === 0) return;
 
-            // Chuyển sang Card Đỏ (Giống Hình 2) sau 0.5s và bắt đầu đếm số không theo nhịp
+            // Chuyển sang thẻ đỏ (Hình 2) và nhảy số không theo nhịp
             setTimeout(() => {
                 card.className = 'number-card red';
                 
@@ -518,7 +191,7 @@
                         current++;
                         countText.innerText = current;
 
-                        // Tạo khoảng thời gian ngẫu nhiên giữa các bước đếm (không theo nhịp: 100ms - 600ms)
+                        // Tốc độ nhảy ngẫu nhiên không theo nhịp (100ms - 600ms)
                         const randomInterval = Math.floor(Math.random() * 500) + 100;
                         setTimeout(step, randomInterval);
                     }
@@ -527,25 +200,15 @@
             }, 600);
         }
 
-        // 6. ĐỒNG BỘ GIỮA CONTROLLER VÀ DISPLAY
-        function syncState() {
-            channel.postMessage(gameState);
-        }
-
-        channel.onmessage = function(event) {
-            const data = event.data;
-            if (data.activeScreen === 'topics') {
-                document.getElementById('elimination-display').style.display = 'none';
+        function showScreen(screenName) {
+            if (screenName === 'topics') {
                 document.getElementById('topics-display').style.display = 'flex';
-                if (data.selectedTopic) {
-                    selectTopic(data.selectedTopic);
-                } else {
-                    resetTopics();
-                }
-            } else if (data.activeScreen === 'elimination') {
-                runEliminationAnimation(data.eliminatedThisRound);
+                document.getElementById('elimination-display').style.display = 'none';
+            } else {
+                document.getElementById('topics-display').style.display = 'none';
+                document.getElementById('elimination-display').style.display = 'flex';
             }
-        };
+        }
     </script>
 </body>
 </html>
