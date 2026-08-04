@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Điều khiển - Đấu trường 100</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f9; padding: 20px; }
+        .control-panel { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; }
+        .form-group { margin-bottom: 20px; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; color: #555; }
+        textarea, input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
+        textarea { resize: vertical; height: 80px; }
+        .btn { display: block; width: 100%; padding: 15px; background: #4a2e5d; color: white; border: none; border-radius: 5px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s;}
+        .btn:hover { background: #351a66; }
+        .live-status { text-align: center; margin-top: 15px; color: green; font-weight: bold; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="control-panel">
+        <h2>🎮 BẢNG ĐIỀU KHIỂN</h2>
+        
+        <div class="form-group">
+            <label>Nội dung câu hỏi:</label>
+            <textarea id="ctrl-question" placeholder="Nhập câu hỏi vào đây..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Đáp án A:</label>
+            <input type="text" id="ctrl-ans-a" placeholder="Nội dung đáp án A">
+        </div>
+
+        <div class="form-group">
+            <label>Đáp án B:</label>
+            <input type="text" id="ctrl-ans-b" placeholder="Nội dung đáp án B">
+        </div>
+
+        <div class="form-group">
+            <label>Đáp án C:</label>
+            <input type="text" id="ctrl-ans-c" placeholder="Nội dung đáp án C">
+        </div>
+
+        <button class="btn" onclick="updateDisplay()">🚀 CẬP NHẬT LÊN MÀN HÌNH</button>
+        <p class="live-status" id="status-msg">Đã cập nhật thành công!</p>
+    </div>
+
+    <script>
+        // Lấy dữ liệu cũ nếu có (để admin không phải gõ lại nếu lỡ F5)
+        window.onload = () => {
+            const data = JSON.parse(localStorage.getItem('dt100_data'));
+            if(data) {
+                document.getElementById('ctrl-question').value = data.question || "";
+                document.getElementById('ctrl-ans-a').value = data.ansA || "";
+                document.getElementById('ctrl-ans-b').value = data.ansB || "";
+                document.getElementById('ctrl-ans-c').value = data.ansC || "";
+            }
+        };
+
+        function updateDisplay() {
+            // Lấy dữ liệu từ input
+            const data = {
+                question: document.getElementById('ctrl-question').value,
+                ansA: document.getElementById('ctrl-ans-a').value,
+                ansB: document.getElementById('ctrl-ans-b').value,
+                ansC: document.getElementById('ctrl-ans-c').value,
+            };
+
+            // Lưu vào localStorage, hành động này sẽ trigger sự kiện 'storage' bên tab display.html
+            localStorage.setItem('dt100_data', JSON.stringify(data));
+
+            // Hiển thị thông báo thành công
+            const status = document.getElementById('status-msg');
+            status.style.display = 'block';
+            setTimeout(() => { status.style.display = 'none'; }, 2000);
+        }
+    </script>
+</body>
+</html>
