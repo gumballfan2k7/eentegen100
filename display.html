@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Show - Display</title>
+    <title>Game Show - Display Stage</title>
     <style>
         * {
             box-sizing: border-box;
@@ -23,10 +23,25 @@
             justify-content: center;
         }
 
-        /* 1. KHU VỰC CHỦ ĐỀ */
-        .topics-container {
+        .screen-container {
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .screen-container.active {
             display: flex;
-            gap: 25px;
+        }
+
+        /* 1. LỰA CHỌN CHỦ ĐỀ (TỐI ĐA 2 CHỦ ĐỀ) */
+        .topics-wrapper {
+            display: flex;
+            gap: 60px;
             justify-content: center;
             align-items: center;
             width: 100%;
@@ -36,44 +51,129 @@
 
         .topic-card {
             background: linear-gradient(135deg, #6b21a8, #3b0764);
-            border: 3px solid #c084fc;
-            border-radius: 20px;
-            padding: 35px 55px;
-            font-size: 2.2rem;
+            border: 4px solid #c084fc;
+            border-radius: 24px;
+            padding: 40px 70px;
+            font-size: 2.8rem;
             font-weight: bold;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            min-width: 320px;
         }
 
-        /* Chủ đề được chọn: Move to Center & Phóng to */
         .topic-card.selected {
             position: absolute;
             left: 50%;
             top: 50%;
-            transform: translate(-50%, -50%) scale(1.35);
+            transform: translate(-50%, -50%) scale(1.3);
             z-index: 10;
-            box-shadow: 0 0 50px #a855f7;
+            box-shadow: 0 0 60px #a855f7;
             background: linear-gradient(135deg, #9333ea, #581c87);
         }
 
-        /* Chủ đề không được chọn: Zoom out & Mờ dần */
         .topic-card.zoom-out {
             transform: scale(0);
             opacity: 0;
             pointer-events: none;
         }
 
-        /* 2. MÀN HÌNH BỊ LOẠI (HÌNH 1 & HÌNH 2) */
-        .elimination-screen {
-            display: none;
+        /* 2. CÂU HỎI & ĐÁP ÁN (ANIMATIONS) */
+        .qa-container {
+            display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
+            gap: 30px;
+            width: 85%;
+            max-width: 1100px;
         }
 
+        /* Question Wipe Up Animation */
+        .question-box {
+            background: linear-gradient(135deg, #4c1d95, #2e1065);
+            border: 3px solid #a855f7;
+            border-radius: 20px;
+            padding: 30px 40px;
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+
+        @keyframes wipeUp {
+            0% {
+                clip-path: inset(100% 0 0 0);
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            100% {
+                clip-path: inset(0 0 0 0);
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-box.wipe-up {
+            display: block;
+            animation: wipeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Options Wipe Down Animation */
+        .option-card {
+            background: rgba(30, 15, 60, 0.85);
+            border: 2px solid #6b21a8;
+            border-radius: 16px;
+            padding: 20px 30px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: none;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        @keyframes wipeDown {
+            0% {
+                clip-path: inset(0 0 100% 0);
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+            100% {
+                clip-path: inset(0 0 0 0);
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .option-card.wipe-down {
+            display: flex;
+            animation: wipeDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .option-card.correct {
+            background: linear-gradient(135deg, #15803d, #166534) !important;
+            border-color: #22c55e !important;
+            box-shadow: 0 0 25px #22c55e;
+        }
+
+        .option-card.eliminated {
+            opacity: 0.25;
+            text-decoration: line-through;
+        }
+
+        .option-prefix {
+            color: #c084fc;
+            margin-right: 15px;
+            font-size: 1.8rem;
+        }
+
+        /* 3. MÀN HÌNH BỊ LOẠI (CARD TÍM / ĐỎ) */
         .number-card {
             width: 80%;
             max-width: 850px;
@@ -86,32 +186,39 @@
             transition: background-color 0.4s ease;
         }
 
-        /* Tím (Khởi tạo/Hình 1) */
-        .number-card.purple {
-            background-color: #7321a9;
-        }
-
-        /* Đỏ (Hiển thị số bị loại/Hình 2) */
-        .number-card.red {
-            background-color: #be0000;
-        }
+        .number-card.purple { background-color: #7321a9; }
+        .number-card.red { background-color: #be0000; }
 
         .number-card span {
             font-size: 16rem;
             font-weight: bold;
             color: #ffffff;
             line-height: 1;
-            user-select: none;
         }
     </style>
 </head>
 <body>
 
-    <!-- KHU VỰC CHỦ ĐỀ -->
-    <div id="topics-display" class="topics-container"></div>
+    <!-- MÀN HÌNH 1: CHỦ ĐỀ (TỐI ĐA 2 CHỦ ĐỀ) -->
+    <div id="screen-topics" class="screen-container active">
+        <div id="topics-wrapper" class="topics-wrapper"></div>
+    </div>
 
-    <!-- KHU VỰC SỐ NGƯỜI BỊ LOẠI -->
-    <div id="elimination-display" class="elimination-screen">
+    <!-- MÀN HÌNH 2: CÂU HỎI VÀ ĐÁP ÁN -->
+    <div id="screen-qa" class="screen-container">
+        <div class="qa-container">
+            <div id="question-box" class="question-box"></div>
+            <div class="options-grid">
+                <div id="opt-A" class="option-card"><span class="option-prefix">A.</span><span class="opt-text"></span></div>
+                <div id="opt-B" class="option-card"><span class="option-prefix">B.</span><span class="opt-text"></span></div>
+                <div id="opt-C" class="option-card"><span class="option-prefix">C.</span><span class="opt-text"></span></div>
+                <div id="opt-D" class="option-card"><span class="option-prefix">D.</span><span class="opt-text"></span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MÀN HÌNH 3: SỐ NGƯỜI BỊ LOẠI -->
+    <div id="screen-elimination" class="screen-container">
         <div id="number-card" class="number-card purple">
             <span id="eliminated-count-text">0</span>
         </div>
@@ -120,95 +227,111 @@
     <script>
         const channel = new BroadcastChannel('game_show_channel');
 
-        // LẮNG NGHE TÍN HIỆU TỪ CONTROLLER
+        function setScreen(screenId) {
+            document.querySelectorAll('.screen-container').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
         channel.onmessage = function(event) {
             const data = event.data;
 
-            if (data.action === 'RENDER_TOPICS') {
-                renderTopics(data.topics);
-            } else if (data.action === 'SELECT_TOPIC') {
-                selectTopic(data.topicName);
-            } else if (data.action === 'RESET_TOPICS') {
-                resetTopics();
-            } else if (data.action === 'SHOW_ELIMINATION') {
-                showElimination(data.count);
+            // 1. CHỦ ĐỀ
+            if (data.action === 'SHOW_TOPICS') {
+                setScreen('screen-topics');
+                const wrapper = document.getElementById('topics-wrapper');
+                wrapper.innerHTML = '';
+                
+                // Chỉ hiển thị tối đa 2 chủ đề
+                const topicsToShow = data.topics.slice(0, 2);
+                topicsToShow.forEach(topic => {
+                    const card = document.createElement('div');
+                    card.className = 'topic-card';
+                    card.dataset.topic = topic;
+                    card.innerText = topic;
+                    wrapper.appendChild(card);
+                });
+            } 
+            else if (data.action === 'SELECT_TOPIC') {
+                setScreen('screen-topics');
+                const cards = document.querySelectorAll('.topic-card');
+                cards.forEach(card => {
+                    if (card.dataset.topic === data.topicName) {
+                        card.classList.remove('zoom-out');
+                        card.classList.add('selected');
+                    } else {
+                        card.classList.remove('selected');
+                        card.classList.add('zoom-out');
+                    }
+                });
+            }
+
+            // 2. CÂU HỎI (Wipe Up) & ĐÁP ÁN (Wipe Down)
+            else if (data.action === 'LOAD_QUESTION') {
+                setScreen('screen-qa');
+                const qBox = document.getElementById('question-box');
+                qBox.classList.remove('wipe-up');
+                qBox.innerText = data.questionData.question;
+
+                // Reset options
+                ['A', 'B', 'C', 'D'].forEach(key => {
+                    const opt = document.getElementById(`opt-${key}`);
+                    opt.classList.remove('wipe-down', 'correct', 'eliminated');
+                    opt.querySelector('.opt-text').innerText = data.questionData.options[key] || '';
+                });
+            }
+            else if (data.action === 'ANIMATE_QUESTION') {
+                setScreen('screen-qa');
+                const qBox = document.getElementById('question-box');
+                qBox.classList.remove('wipe-up');
+                void qBox.offsetWidth; // Trigger reflow
+                qBox.classList.add('wipe-up');
+            }
+            else if (data.action === 'ANIMATE_OPTION') {
+                setScreen('screen-qa');
+                const opt = document.getElementById(`opt-${data.key}`);
+                if (opt) {
+                    opt.classList.remove('wipe-down');
+                    void opt.offsetWidth;
+                    opt.classList.add('wipe-down');
+                }
+            }
+            else if (data.action === 'SHOW_CORRECT_ANSWER') {
+                const opt = document.getElementById(`opt-${data.correctKey}`);
+                if (opt) opt.classList.add('correct');
+            }
+            else if (data.action === 'APPLY_5050') {
+                data.eliminatedKeys.forEach(key => {
+                    const opt = document.getElementById(`opt-${key}`);
+                    if (opt) opt.classList.add('eliminated');
+                });
+            }
+
+            // 3. ĐẾM SỐ BỊ LOẠI
+            else if (data.action === 'SHOW_ELIMINATION') {
+                setScreen('screen-elimination');
+                const card = document.getElementById('number-card');
+                const countText = document.getElementById('eliminated-count-text');
+
+                card.className = 'number-card purple';
+                countText.innerText = '0';
+
+                if (data.count === 0) return;
+
+                setTimeout(() => {
+                    card.className = 'number-card red';
+                    let current = 0;
+                    function step() {
+                        if (current < data.count) {
+                            current++;
+                            countText.innerText = current;
+                            const randomDelay = Math.floor(Math.random() * 500) + 100;
+                            setTimeout(step, randomDelay);
+                        }
+                    }
+                    step();
+                }, 600);
             }
         };
-
-        function renderTopics(topics) {
-            showScreen('topics');
-            const container = document.getElementById('topics-display');
-            container.innerHTML = '';
-            topics.forEach(topic => {
-                const card = document.createElement('div');
-                card.className = 'topic-card';
-                card.dataset.topic = topic;
-                card.innerText = topic;
-                container.appendChild(card);
-            });
-        }
-
-        function selectTopic(topicName) {
-            showScreen('topics');
-            const cards = document.querySelectorAll('.topic-card');
-            cards.forEach(card => {
-                if (card.dataset.topic === topicName) {
-                    card.classList.remove('zoom-out');
-                    card.classList.add('selected');
-                } else {
-                    card.classList.remove('selected');
-                    card.classList.add('zoom-out');
-                }
-            });
-        }
-
-        function resetTopics() {
-            showScreen('topics');
-            const cards = document.querySelectorAll('.topic-card');
-            cards.forEach(card => {
-                card.classList.remove('selected', 'zoom-out');
-            });
-        }
-
-        function showElimination(targetNumber) {
-            showScreen('elimination');
-            const card = document.getElementById('number-card');
-            const countText = document.getElementById('eliminated-count-text');
-
-            // Trạng thái ban đầu: Thẻ tím, số 0 (Hình 1)
-            card.className = 'number-card purple';
-            countText.innerText = '0';
-
-            if (targetNumber === 0) return;
-
-            // Chuyển sang thẻ đỏ (Hình 2) và nhảy số không theo nhịp
-            setTimeout(() => {
-                card.className = 'number-card red';
-                
-                let current = 0;
-                function step() {
-                    if (current < targetNumber) {
-                        current++;
-                        countText.innerText = current;
-
-                        // Tốc độ nhảy ngẫu nhiên không theo nhịp (100ms - 600ms)
-                        const randomInterval = Math.floor(Math.random() * 500) + 100;
-                        setTimeout(step, randomInterval);
-                    }
-                }
-                step();
-            }, 600);
-        }
-
-        function showScreen(screenName) {
-            if (screenName === 'topics') {
-                document.getElementById('topics-display').style.display = 'flex';
-                document.getElementById('elimination-display').style.display = 'none';
-            } else {
-                document.getElementById('topics-display').style.display = 'none';
-                document.getElementById('elimination-display').style.display = 'flex';
-            }
-        }
     </script>
 </body>
 </html>
