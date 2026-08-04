@@ -122,35 +122,36 @@
 
         <!-- 1. CẤU HÌNH EXCEL -->
         <div class="panel-box">
-            <div class="panel-title">1. Đề Thi & Chủ Đề (.xlsx)</div>
-            <button class="btn btn-secondary" onclick="downloadSampleExcel()">📥 Tải File Mẫu Excel (3 Đáp Án)</button>
+            <div class="panel-title">1. Đề Thi Theo Lượt & Chủ Đề (.xlsx)</div>
+            <button class="btn btn-secondary" onclick="downloadSampleExcel()">📥 Tải File Excel Mẫu Mới</button>
             <label class="file-label" for="excel-input">📂 Nhập File Đề</label>
             <input type="file" id="excel-input" accept=".xlsx, .xls" onchange="importExcel(event)">
-            <div id="file-status" class="stats-info">Đã nạp bộ câu hỏi 3 đáp án mặc định.</div>
+            <div id="file-status" class="stats-info">Đã tải bộ câu hỏi mặc định (2 chủ đề cho mỗi câu).</div>
         </div>
 
-        <!-- 2. HIỂN THỊ CHỦ ĐỀ -->
+        <!-- 2. ĐIỀU KHIỂN CHỦ ĐỀ -->
         <div class="panel-box">
-            <div class="panel-title">2. Điều Khiển Chủ Đề (Max 2 Chủ Đề)</div>
-            <button class="btn btn-secondary" onclick="sendShowTopics()">📺 Hiển Thị 2 Chủ Đề Trên Màn Hình</button>
+            <div class="panel-title">2. Lựa Chọn Chủ Đề Cho Lượt Này</div>
+            <button class="btn btn-secondary" onclick="sendShowTopics()">📺 Hiển Thị Chủ Đề Trận Này</button>
             <div id="topic-actions" style="margin-top: 10px;"></div>
         </div>
 
-        <!-- 3. ĐIỀU KHIỂN CÂU HỎI VÀ NGHƯỜI CHƠI CHỌN ĐÁP ÁN -->
+        <!-- 3. TRÌNH CHIẾU CÂU HỎI & CHỌN ĐÁP ÁN -->
         <div class="panel-box" style="grid-column: span 2;">
-            <div class="panel-title">3. Điều Khiển Trình Chiếu Câu Hỏi & Chọn Đáp Án (Tối Đa 3 Đáp Án)</div>
+            <div class="panel-title">3. Trình Chiếu Câu Hỏi & Ghi Nhận Lựa Chọn NgườI Chơi</div>
             
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
-                <div><b>Câu hiện tại:</b> <span id="current-q-index" style="color:#c084fc; font-size:1.2rem;">Câu 1</span></div>
+                <div><b>Lượt thi hiện tại:</b> <span id="current-q-index" style="color:#c084fc; font-size:1.2rem;">Lượt 1 (Câu 1)</span></div>
                 <div>
-                    <button class="btn btn-secondary" onclick="prevQuestion()">⬅️ Câu Trước</button>
-                    <button class="btn btn-secondary" onclick="nextQuestion()">Câu Tiếp ➡️</button>
+                    <button class="btn btn-secondary" onclick="prevQuestion()">⬅️ Lượt Trước</button>
+                    <button class="btn btn-secondary" onclick="nextQuestion()">Lượt Tiếp ➡️</button>
                 </div>
             </div>
 
-            <div id="q-preview" class="stats-info" style="margin-bottom: 12px; font-size: 1rem;"></div>
+            <div id="q-preview" class="stats-info" style="margin-bottom: 12px; font-size: 1rem;">
+                Chưa chọn chủ đề cho lượt này...
+            </div>
 
-            <!-- Các nút điều khiển hiển thị -->
             <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
                 <button class="btn btn-success" onclick="sendAnimateQuestion()">⬆️ Hiện Câu Hỏi (Wipe Up)</button>
                 <button class="btn" onclick="sendAnimateOption('A')">⬇️ Hiện Đáp Án A</button>
@@ -158,7 +159,6 @@
                 <button class="btn" onclick="sendAnimateOption('C')">⬇️ Hiện Đáp Án C</button>
             </div>
 
-            <!-- Nút chọn đáp án của người chơi -->
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                 <button class="btn btn-warning" onclick="selectPlayerAnswer('A')">👤 Người Chơi Chọn A</button>
                 <button class="btn btn-warning" onclick="selectPlayerAnswer('B')">👤 Người Chơi Chọn B</button>
@@ -167,11 +167,11 @@
             </div>
         </div>
 
-        <!-- 4. QUYỀN TRỢ GIÚP (BÔI XÁM MẤY CON SỐ TRÊN DISPLAY) -->
+        <!-- 4. QUYỀN TRỢ GIÚP -->
         <div class="panel-box">
             <div class="panel-title">4. Quyền Trợ Giúp (25% - 50% - 75%)</div>
             <div id="lifeline-warning" class="warning-box">
-                🚫 <b>Câu đầu tiên: Không sử dụng quyền trợ giúp.</b>
+                🚫 <b>Câu đầu tiên: Không hiển thị & không sử dụng quyền trợ giúp.</b>
             </div>
             <div style="display: flex; gap: 5px;">
                 <button id="btn-ll-25" class="btn btn-secondary" onclick="useLifeline('25')" disabled>Dùng 25%</button>
@@ -180,9 +180,9 @@
             </div>
         </div>
 
-        <!-- 5. MÀN HÌNH ĐẾM SỐ NGƯỜI BỊ LOẠI (2 BƯỚC) -->
+        <!-- 5. MÀN HÌNH BỊ LOẠI -->
         <div class="panel-box">
-            <div class="panel-title">5. Màn Hình Số Người Trả Lời Sai (2 Bước)</div>
+            <div class="panel-title">5. Màn Hình Số Người Bị Loại (2 Bước)</div>
             <div style="display: flex; flex-direction: column; gap: 8px;">
                 <button class="btn btn-secondary" style="padding: 10px;" onclick="prepareElimination()">
                     📺 1. Mở Màn Hình Đếm (Thẻ Tím - Số 0)
@@ -199,23 +199,42 @@
     <script>
         const channel = new BroadcastChannel('game_show_channel');
 
-        let topics = ["Toán Học", "Khoa Học"];
-        let questions = [
+        let currentRound = 1;
+        let selectedTopic = null;
+        let activeQuestion = null;
+
+        // Cấu trúc dữ liệu câu hỏi: Mỗi lượt (round) có các chủ đề khác nhau
+        let questionsDatabase = [
             {
+                round: 1,
                 topic: "Toán Học",
-                question: "Câu 1: Giá trị của 1 + 1 bằng bao nhiêu?",
-                options: { A: "1", B: "2", C: "3" },
+                question: "Câu 1 (Toán): 1 + 1 bằng bao nhiêu?",
+                options: { A: "ĐÁP ÁN A (1)", B: "ĐÁP ÁN B (2)", C: "ĐÁP ÁN C (3)" },
                 correct: "B"
             },
             {
+                round: 1,
                 topic: "Khoa Học",
-                question: "Câu 2: Nước sôi ở bao nhiêu độ C ở điều kiện tiêu chuẩn?",
-                options: { A: "50°C", B: "80°C", C: "100°C" },
+                question: "Câu 1 (Khoa học): Nước sôi ở bao nhiêu độ C ở điều kiện tiêu chuẩn?",
+                options: { A: "ĐÁP ÁN A (50°C)", B: "ĐÁP ÁN B (80°C)", C: "ĐÁP ÁN C (100°C)" },
                 correct: "C"
+            },
+            {
+                round: 2,
+                topic: "Lịch Sử",
+                question: "Câu 2 (Lịch sử): Chiến thắng Điện Biên Phủ diễn ra vào năm nào?",
+                options: { A: "ĐÁP ÁN A (1945)", B: "ĐÁP ÁN B (1954)", C: "ĐÁP ÁN C (1975)" },
+                correct: "B"
+            },
+            {
+                round: 2,
+                topic: "Văn Học",
+                question: "Câu 2 (Văn học): Tác giả của Truyện Kiều là ai?",
+                options: { A: "ĐÁP ÁN A (Nguyễn Du)", B: "ĐÁP ÁN B (Tố Hữu)", C: "ĐÁP ÁN C (Xuân Diệu)" },
+                correct: "A"
             }
         ];
 
-        let currentQIndex = 0;
         let players = [];
         let totalEliminated = 0;
         let lastCalculatedEliminated = 0;
@@ -223,69 +242,102 @@
 
         window.onload = function() {
             initPlayers();
-            renderTopicControls();
-            loadCurrentQuestion();
+            updateRoundUI();
         };
 
-        // CHỦ ĐỀ
-        function renderTopicControls() {
-            const container = document.getElementById('topic-actions');
-            container.innerHTML = '';
-            topics.slice(0, 2).forEach(topic => {
-                const btn = document.createElement('button');
-                btn.className = 'btn';
-                btn.innerText = `Chọn: ${topic}`;
-                btn.onclick = () => channel.postMessage({ action: 'SELECT_TOPIC', topicName: topic });
-                container.appendChild(btn);
-            });
+        // LẤY CHỦ ĐỀ CÓ SẴN Ở LƯỢT HIỆN TẠI
+        function getAvailableTopicsForRound(round) {
+            const roundQuestions = questionsDatabase.filter(q => q.round === round);
+            return [...new Set(roundQuestions.map(q => q.topic))].slice(0, 2);
         }
 
-        function sendShowTopics() {
-            channel.postMessage({ action: 'SHOW_TOPICS', topics: topics });
-        }
+        function updateRoundUI() {
+            document.getElementById('current-q-index').innerText = `Lượt ${currentRound}`;
+            selectedTopic = null;
+            activeQuestion = null;
 
-        // CÂU HỎI VÀ TRỢ GIÚP
-        function loadCurrentQuestion() {
-            const q = questions[currentQIndex];
-            document.getElementById('current-q-index').innerText = `Câu ${currentQIndex + 1}`;
-            document.getElementById('q-preview').innerHTML = `
-                <b>[${q.topic}]</b> ${q.question}<br>
-                A: ${q.options.A} | B: ${q.options.B} | C: ${q.options.C}<br>
-                <b style="color:#22c55e;">Đáp án đúng: ${q.correct}</b>
-            `;
+            document.getElementById('q-preview').innerHTML = `<i style="color:#a855f7;">Hãy nhấn chọn 1 trong 2 chủ đề phía trên để nạp câu hỏi lượt ${currentRound}...</i>`;
 
-            // Khóa trợ giúp ở câu 1
-            const isFirstQuestion = (currentQIndex === 0);
+            renderTopicControls();
+
+            // Khóa/Mở các nút trợ giúp
+            const isFirstQuestion = (currentRound === 1);
             document.getElementById('lifeline-warning').style.display = isFirstQuestion ? 'block' : 'none';
 
             ['25', '50', '75'].forEach(val => {
                 const btn = document.getElementById(`btn-ll-${val}`);
                 btn.disabled = isFirstQuestion || lifelineState[val];
             });
+        }
 
-            channel.postMessage({ action: 'LOAD_QUESTION', questionData: q });
-            channel.postMessage({ action: 'UPDATE_LIFELINES', used: lifelineState });
+        function renderTopicControls() {
+            const container = document.getElementById('topic-actions');
+            container.innerHTML = '';
+            const topics = getAvailableTopicsForRound(currentRound);
+
+            topics.forEach(topic => {
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.innerText = `Chủ Đề: ${topic}`;
+                btn.onclick = () => selectTopic(topic);
+                container.appendChild(btn);
+            });
+        }
+
+        function sendShowTopics() {
+            const topics = getAvailableTopicsForRound(currentRound);
+            channel.postMessage({ action: 'SHOW_TOPICS', topics: topics });
+        }
+
+        // KHI CHỌN NÚT CHỦ ĐỀ -> NẠP CÂU HỎI THUỘC CHỦ ĐỀ ĐÓ
+        function selectTopic(topicName) {
+            selectedTopic = topicName;
+
+            // Gửi hiệu ứng chọn chủ đề tới Display Stage
+            channel.postMessage({ action: 'SELECT_TOPIC', topicName: topicName });
+
+            // Tìm câu hỏi tương ứng với lượt + chủ đề
+            activeQuestion = questionsDatabase.find(q => q.round === currentRound && q.topic === topicName);
+
+            if (activeQuestion) {
+                document.getElementById('q-preview').innerHTML = `
+                    <b>[Lượt ${currentRound} - Chủ Đề: ${activeQuestion.topic}]</b><br>
+                    ${activeQuestion.question}<br>
+                    A: ${activeQuestion.options.A} | B: ${activeQuestion.options.B} | C: ${activeQuestion.options.C}<br>
+                    <b style="color:#22c55e;">Đáp án đúng: ${activeQuestion.correct}</b>
+                `;
+
+                // Nạp câu hỏi sang Display Stage
+                channel.postMessage({ 
+                    action: 'LOAD_QUESTION', 
+                    questionData: activeQuestion,
+                    isFirstQuestion: (currentRound === 1)
+                });
+            }
         }
 
         function prevQuestion() {
-            if (currentQIndex > 0) {
-                currentQIndex--;
-                loadCurrentQuestion();
+            if (currentRound > 1) {
+                currentRound--;
+                updateRoundUI();
             }
         }
 
         function nextQuestion() {
-            if (currentQIndex < questions.length - 1) {
-                currentQIndex++;
-                loadCurrentQuestion();
+            const maxRound = Math.max(...questionsDatabase.map(q => q.round));
+            if (currentRound < maxRound) {
+                currentRound++;
+                updateRoundUI();
             }
         }
 
         function sendAnimateQuestion() {
+            if (!activeQuestion) return alert('Vui lòng chọn chủ đề trước!');
             channel.postMessage({ action: 'ANIMATE_QUESTION' });
         }
 
         function sendAnimateOption(key) {
+            if (!activeQuestion) return alert('Vui lòng chọn chủ đề trước!');
             channel.postMessage({ action: 'ANIMATE_OPTION', key: key });
         }
 
@@ -294,18 +346,18 @@
         }
 
         function sendCorrectAnswer() {
-            const q = questions[currentQIndex];
-            channel.postMessage({ action: 'SHOW_CORRECT_ANSWER', correctKey: q.correct });
+            if (!activeQuestion) return alert('Vui lòng chọn chủ đề trước!');
+            channel.postMessage({ action: 'SHOW_CORRECT_ANSWER', correctKey: activeQuestion.correct });
         }
 
         function useLifeline(val) {
-            if (currentQIndex === 0) return;
+            if (currentRound === 1) return;
             lifelineState[val] = true;
             document.getElementById(`btn-ll-${val}`).disabled = true;
             channel.postMessage({ action: 'UPDATE_LIFELINES', used: lifelineState });
         }
 
-        // MÀN HÌNH ĐẾM SỐ NGƯỜI SAI (2 BƯỚC)
+        // MÀN HÌNH ĐẾM SỐ NGƯỜI BỊ LOẠI (2 BƯỚC)
         function prepareElimination() {
             calculateRoundElimination();
             channel.postMessage({ action: 'PREPARE_ELIMINATION', count: lastCalculatedEliminated });
@@ -341,17 +393,19 @@
             updatePlayerStatsUI();
         }
 
-        // EXCEL IMPORT & EXPORT (3 ĐÁP ÁN)
+        // EXCEL IMPORT & SAMPLE EXCEL
         function downloadSampleExcel() {
             const data = [
-                ["STT", "Chủ đề", "Câu hỏi", "Đáp án A", "Đáp án B", "Đáp án C", "Đáp án đúng"],
-                [1, "Toán Học", "Câu 1: 1 + 1 bằng mấy?", "1", "2", "3", "B"],
-                [2, "Khoa Học", "Câu 2: Nước sôi ở bao nhiêu độ C?", "50°C", "80°C", "100°C", "C"]
+                ["Lượt/Mức", "Chủ đề", "Câu hỏi", "Đáp án A", "Đáp án B", "Đáp án C", "Đáp án đúng"],
+                [1, "Toán Học", "Câu 1 (Toán): 1 + 1 bằng mấy?", "1", "2", "3", "B"],
+                [1, "Khoa Học", "Câu 1 (Khoa học): Nước sôi ở bao nhiêu độ C?", "50°C", "80°C", "100°C", "C"],
+                [2, "Lịch Sử", "Câu 2 (Lịch sử): Điện Biên Phủ năm nào?", "1945", "1954", "1975", "B"],
+                [2, "Văn Học", "Câu 2 (Văn học): Tác giả Truyện Kiều?", "Nguyễn Du", "Tố Hữu", "Xuân Diệu", "A"]
             ];
             const ws = XLSX.utils.aoa_to_sheet(data);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "DeThi3DapAn");
-            XLSX.writeFile(wb, "Mau_De_Thi_3_Dap_An.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "DeThiNhiMultipleTopics");
+            XLSX.writeFile(wb, "Mau_De_Thi_Theo_Luot_And_Chu_De.xlsx");
         }
 
         function importExcel(e) {
@@ -365,9 +419,10 @@
                 const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
 
                 if (jsonData.length > 0) {
-                    questions = jsonData.map(row => ({
-                        topic: row["Chủ đề"] || "Chung",
-                        question: row["Câu hỏi"] || "",
+                    questionsDatabase = jsonData.map(row => ({
+                        round: Number(row["Lượt/Mức"] || row["STT"] || 1),
+                        topic: String(row["Chủ đề"] || "Chung"),
+                        question: String(row["Câu hỏi"] || ""),
                         options: {
                             A: String(row["Đáp án A"] || ""),
                             B: String(row["Đáp án B"] || ""),
@@ -376,17 +431,15 @@
                         correct: String(row["Đáp án đúng"] || "A").trim().toUpperCase()
                     }));
 
-                    topics = [...new Set(questions.map(q => q.topic))];
-                    currentQIndex = 0;
-                    renderTopicControls();
-                    loadCurrentQuestion();
-                    document.getElementById('file-status').innerText = `✅ Đã tải ${questions.length} câu hỏi 3 đáp án từ Excel.`;
+                    currentRound = 1;
+                    updateRoundUI();
+                    document.getElementById('file-status').innerText = `✅ Đã tải ${questionsDatabase.length} câu hỏi từ Excel.`;
                 }
             };
             reader.readAsArrayBuffer(file);
         }
 
-        // MÔ PHỎNG 100 NGƯỜI CHƠI
+        // MÔ PHỎNG NGƯỜI CHƠI
         function initPlayers() {
             players = [];
             const topIQ = Math.floor(Math.random() * (195 - 170 + 1)) + 170;
