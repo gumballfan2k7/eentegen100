@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Show - Controller</title>
-    <!-- Thư viện SheetJS đọc/ghi Excel -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <style>
         * {
@@ -15,10 +14,9 @@
         }
 
         body {
-            background-color: #0f081d;
+            background-color: #0d0618;
             color: #ffffff;
-            padding: 25px;
-            min-height: 100vh;
+            padding: 20px;
         }
 
         .header-bar {
@@ -27,11 +25,11 @@
             align-items: center;
             border-bottom: 2px solid #3b1d6e;
             padding-bottom: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .header-title {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             color: #c084fc;
             font-weight: bold;
         }
@@ -40,7 +38,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
         }
 
@@ -52,11 +50,11 @@
         }
 
         .panel-title {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #a855f7;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             border-bottom: 1px solid #2e1557;
-            padding-bottom: 8px;
+            padding-bottom: 6px;
             font-weight: bold;
         }
 
@@ -64,84 +62,121 @@
             background: #6b21a8;
             color: white;
             border: none;
-            padding: 10px 18px;
+            padding: 10px 16px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            margin: 5px 0;
+            margin: 4px;
             transition: 0.2s;
         }
 
         .btn:hover { background: #9333ea; }
+        .btn:disabled { background: #374151 !important; color: #9ca3af; cursor: not-allowed; }
         .btn-danger { background: #be0000; }
         .btn-danger:hover { background: #e00000; }
+        .btn-success { background: #16a34a; }
+        .btn-success:hover { background: #22c55e; }
         .btn-secondary { background: #374151; }
-        .btn-secondary:hover { background: #4b5563; }
 
         input[type="file"] { display: none; }
         .file-label {
             display: inline-block;
             background: #2563eb;
             color: white;
-            padding: 10px 18px;
+            padding: 9px 16px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
         }
 
         .stats-info {
-            background: #0d0618;
-            padding: 12px;
-            border-radius: 8px;
+            background: #07030d;
+            padding: 10px;
+            border-radius: 6px;
             margin-top: 10px;
-            font-size: 0.95rem;
-            line-height: 1.5;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .warning-box {
+            background: #451a03;
+            border: 1px solid #f59e0b;
+            color: #fef3c7;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
     <div class="header-bar">
-        <div class="header-title">🎛️ BẢNG ĐIỀU KHIỂN (CONTROLLER)</div>
-        <button class="btn btn-secondary" onclick="openDisplayWindow()">↗️ Mở Trang Display</button>
+        <div class="header-title">🎛️ BẢNG ĐIỀU KHIỂN SÂN KHẤU</div>
+        <button class="btn btn-secondary" onclick="window.open('display.html', '_blank', 'width=1280,height=720')">↗️ Mở Trang Display Stage</button>
     </div>
 
     <div class="control-grid">
-        
-        <!-- 1. CẤU HÌNH ĐỀ THI EXCEL -->
+
+        <!-- 1. CẤU HÌNH EXCEL -->
         <div class="panel-box">
-            <div class="panel-title">1. Quản Lý Đề Thi (.xlsx)</div>
+            <div class="panel-title">1. Đề Thi & Chủ Đề (.xlsx)</div>
             <button class="btn btn-secondary" onclick="downloadSampleExcel()">📥 Tải File Mẫu Excel</button>
-            <br><br>
-            <label class="file-label" for="excel-input">📂 Nhập File Đề (.xlsx)</label>
+            <label class="file-label" for="excel-input">📂 Nhập File Đề</label>
             <input type="file" id="excel-input" accept=".xlsx, .xls" onchange="importExcel(event)">
-            <div id="file-status" class="stats-info">Chưa tải file đề. Đang dùng các chủ đề mặc định.</div>
+            <div id="file-status" class="stats-info">Đã tải bộ câu hỏi mặc định.</div>
         </div>
 
-        <!-- 2. MÔ PHỎNG 100 NGƯỜI CHƠI -->
+        <!-- 2. ĐIỀU KHIỂN CHỦ ĐỀ (MAX 2 CHỦ ĐỀ HIỂN THỊ) -->
         <div class="panel-box">
-            <div class="panel-title">2. Mô Phỏng 100 Người Chơi (IQ System)</div>
-            <button class="btn" onclick="initPlayers()">🔄 Khởi Tạo Mới 100 Người Chơi</button>
-            <div id="player-stats" class="stats-info">Đang khởi tạo...</div>
+            <div class="panel-title">2. Hiển Thị Chủ Đề (Tối Đa 2 Chủ Đề)</div>
+            <button class="btn btn-secondary" onclick="sendShowTopics()">📺 Hiển Thị 2 Chủ Đề Trên Sân Khấu</button>
+            <div id="topic-actions" style="margin-top: 10px;"></div>
         </div>
 
-        <!-- 3. ĐIỀU KHIỂN CÁC CHỦ ĐỀ -->
-        <div class="panel-box">
-            <div class="panel-title">3. Điều Khiển Chủ Đề</div>
-            <div id="topic-buttons" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
-            <br>
-            <button class="btn btn-secondary" onclick="resetTopics()">↺ Reset Trạng Thái Chủ Đề</button>
+        <!-- 3. ĐIỀU KHIỂN CÂU HỎI VÀ ĐÁP ÁN (STEP BY STEP) -->
+        <div class="panel-box" style="grid-column: span 2;">
+            <div class="panel-title">3. Điều Khiển Trình Chiếu Câu Hỏi & Đáp Án</div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+                <div><b>Câu hiện tại:</b> <span id="current-q-index" style="color:#c084fc; font-size:1.2rem;">Câu 1</span></div>
+                <div>
+                    <button class="btn btn-secondary" onclick="prevQuestion()">⬅️ Câu Trước</button>
+                    <button class="btn btn-secondary" onclick="nextQuestion()">Câu Tiếp ➡️</button>
+                </div>
+            </div>
+
+            <div id="q-preview" class="stats-info" style="margin-bottom: 12px; font-size: 1rem;">
+                <!-- Nội dung câu hỏi xem trước -->
+            </div>
+
+            <!-- Các nút bấm kích hoạt Animation trên Display -->
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn btn-success" onclick="sendAnimateQuestion()">⬆️ Hiện Câu Hỏi (Wipe Up)</button>
+                <button class="btn" onclick="sendAnimateOption('A')">⬇️ Hiện Đáp Án A (Wipe Down)</button>
+                <button class="btn" onclick="sendAnimateOption('B')">⬇️ Hiện Đáp Án B (Wipe Down)</button>
+                <button class="btn" onclick="sendAnimateOption('C')">⬇️ Hiện Đáp Án C (Wipe Down)</button>
+                <button class="btn" onclick="sendAnimateOption('D')">⬇️ Hiện Đáp Án D (Wipe Down)</button>
+                <button class="btn btn-danger" onclick="sendCorrectAnswer()">✅ Hiện Đáp Án Đúng</button>
+            </div>
         </div>
 
-        <!-- 4. ĐIỀU KHIỂN LOẠI NGƯỜI CHƠI -->
+        <!-- 4. QUYỀN TRỢ GIÚP (BỊ KHÓA Ở CÂU 1) -->
         <div class="panel-box">
-            <div class="panel-title">4. Màn Hình Số Người Trả Lời Sai</div>
-            <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 12px;">
-                Bấm nút dưới đây sau mỗi câu hỏi để kích hoạt màn hình đếm số người bị loại (nhảy số ngẫu nhiên không theo nhịp).
-            </p>
-            <button class="btn btn-danger" style="font-size: 1.1rem; padding: 12px 24px;" onclick="triggerElimination()">
-                🚨 Hiển Thị Màn Hình Loại Người Chơi
+            <div class="panel-title">4. Quyền Trợ Giúp</div>
+            <div id="lifeline-warning" class="warning-box">
+                🚫 <b>Câu đầu tiên: Không sử dụng quyền trợ giúp.</b>
+            </div>
+            <button id="btn-5050" class="btn btn-secondary" onclick="use5050()" disabled>✂️ Trợ Giúp 50:50</button>
+        </div>
+
+        <!-- 5. MÔ PHỎNG LOẠI NGƯỜI CHƠI -->
+        <div class="panel-box">
+            <div class="panel-title">5. Màn Hình Số Người Trả Lời Sai</div>
+            <button class="btn btn-danger" style="width: 100%; padding: 12px; font-size: 1.1rem;" onclick="triggerElimination()">
+                🚨 Hiển Thị Số Người Bị Loại (Card Tím ➔ Đỏ)
             </button>
+            <div id="player-stats" class="stats-info"></div>
         </div>
 
     </div>
@@ -150,95 +185,42 @@
         const channel = new BroadcastChannel('game_show_channel');
 
         let topics = ["Toán Học", "Khoa Học", "Lịch Sử", "Văn Học"];
+        let questions = [
+            {
+                topic: "Toán Học",
+                question: "Câu 1: Giá trị của 1 + 1 bằng bao nhiêu?",
+                options: { A: "1", B: "2", C: "3", D: "4" },
+                correct: "B"
+            },
+            {
+                topic: "Khoa Học",
+                question: "Câu 2: Nước sôi ở bao nhiêu độ C ở điều kiện tiêu chuẩn?",
+                options: { A: "50°C", B: "80°C", C: "100°C", D: "120°C" },
+                correct: "C"
+            }
+        ];
+
+        let currentQIndex = 0;
         let players = [];
         let totalEliminated = 0;
 
         window.onload = function() {
             initPlayers();
-            syncTopics();
+            renderTopicControls();
+            loadCurrentQuestion();
         };
 
-        function openDisplayWindow() {
-            window.open('display.html', '_blank', 'width=1280,height=720');
-        }
-
-        // MÔ PHỎNG 100 NGƯỜI CHƠI VỚI CHỈ SỐ IQ
-        function initPlayers() {
-            players = [];
-            // 1 người có IQ cao nhất (170 - 195)
-            const topIQ = Math.floor(Math.random() * (195 - 170 + 1)) + 170;
-            players.push({ id: 1, iq: topIQ, status: 'active' });
-
-            // 99 người còn lại (IQ 85 - 140)
-            for (let i = 2; i <= 100; i++) {
-                const iq = Math.floor(Math.random() * (140 - 85 + 1)) + 85;
-                players.push({ id: i, iq: iq, status: 'active' });
-            }
-
-            totalEliminated = 0;
-            players.sort(() => Math.random() - 0.5);
-            updatePlayerStatsUI();
-        }
-
-        function updatePlayerStatsUI() {
-            const activeCount = players.filter(p => p.status === 'active').length;
-            const topPlayer = players.reduce((max, p) => p.iq > max.iq ? p : max, players[0]);
-
-            document.getElementById('player-stats').innerHTML = `
-                • Tổng số người chơi: <b>100</b><br>
-                • Còn lại: <b style="color:#4ade80">${activeCount}</b> | Đã bị loại: <b style="color:#f87171">${totalEliminated}</b><br>
-                • Người có IQ cao nhất: <b>IQ ${topPlayer.iq}</b> (${topPlayer.status === 'active' ? 'Còn thi đấu' : 'Đã bị loại'})
-            `;
-        }
-
-        // TẠO VÀ NHẬP FILE EXCEL
-        function downloadSampleExcel() {
-            const data = [
-                ["STT", "Chủ đề", "Câu hỏi", "Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D", "Đáp án đúng"],
-                [1, "Toán Học", "1 + 1 bằng mấy?", "1", "2", "3", "4", "B"],
-                [2, "Khoa Học", "Nước sôi ở bao nhiêu độ C?", "50°C", "80°C", "100°C", "120°C", "C"],
-                [3, "Lịch Sử", "Năm 1945 có sự kiện gì?", "Cách mạng Tháng 8", "Điện Biên Phủ", "Đổi mới", "30/4", "A"]
-            ];
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "DeThiSample");
-            XLSX.writeFile(wb, "Mau_De_Thi.xlsx");
-        }
-
-        function importExcel(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
-
-                const extractedTopics = [...new Set(jsonData.map(row => row["Chủ đề"]).filter(Boolean))];
-                if (extractedTopics.length > 0) {
-                    topics = extractedTopics;
-                    syncTopics();
-                    document.getElementById('file-status').innerHTML = `✅ Đã tải ${jsonData.length} câu hỏi. Danh sách chủ đề: <b>${extractedTopics.join(', ')}</b>`;
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        // ĐIỀU KHIỂN CHỦ ĐỀ
-        function syncTopics() {
-            renderTopicButtons();
-            channel.postMessage({ action: 'RENDER_TOPICS', topics: topics });
-        }
-
-        function renderTopicButtons() {
-            const container = document.getElementById('topic-buttons');
+        // 1. CHỦ ĐỀ
+        function renderTopicControls() {
+            const container = document.getElementById('topic-actions');
             container.innerHTML = '';
-            topics.forEach(topic => {
+            
+            // Lấy tối đa 2 chủ đề
+            const activeTopics = topics.slice(0, 2);
+            activeTopics.forEach(topic => {
                 const btn = document.createElement('button');
                 btn.className = 'btn';
-                btn.innerText = topic;
+                btn.innerText = `Chọn: ${topic}`;
                 btn.onclick = () => {
                     channel.postMessage({ action: 'SELECT_TOPIC', topicName: topic });
                 };
@@ -246,317 +228,164 @@
             });
         }
 
-        function resetTopics() {
-            channel.postMessage({ action: 'RESET_TOPICS' });
+        function sendShowTopics() {
+            channel.postMessage({ action: 'SHOW_TOPICS', topics: topics });
         }
 
-        // KÍCH HOẠT MÀN HÌNH LOẠI NGƯỜI CHƠI
-        function triggerElimination() {
-            const activePlayers = players.filter(p => p.status === 'active');
-            if (activePlayers.length === 0) return;
+        // 2. CÂU HỎI VÀ QUYỀN TRỢ GIÚP
+        function loadCurrentQuestion() {
+            const q = questions[currentQIndex];
+            document.getElementById('current-q-index').innerText = `Câu ${currentQIndex + 1}`;
+            document.getElementById('q-preview').innerHTML = `
+                <b>[${q.topic}]</b> ${q.question}<br>
+                A: ${q.options.A} | B: ${q.options.B} | C: ${q.options.C} | D: ${q.options.D}<br>
+                <b style="color:#22c55e;">Đáp án đúng: ${q.correct}</b>
+            `;
 
-            // Tính toán số người bị loại ở vòng này
-            let eliminatedCount = Math.floor(activePlayers.length * (Math.random() * 0.2 + 0.05));
-            if (eliminatedCount === 0 && activePlayers.length > 1) eliminatedCount = 1;
+            // Kiểm tra quy tắc: CÂU ĐẦU TIÊN KHÔNG DÙNG QUYỀN TRỢ GIÚP
+            const isFirstQuestion = (currentQIndex === 0);
+            const lifelineBtn = document.getElementById('btn-5050');
+            const warningBox = document.getElementById('lifeline-warning');
 
-            // Loại ưu tiên những người IQ thấp hơn trước
-            activePlayers.sort((a, b) => a.iq - b.iq);
-
-            let count = 0;
-            for (let player of activePlayers) {
-                if (count < eliminatedCount) {
-                    if (player.iq >= 170 && Math.random() > 0.05) continue; // Tỷ lệ bị loại của IQ siêu cao cực thấp
-                    player.status = 'eliminated';
-                    count++;
-                }
+            if (isFirstQuestion) {
+                lifelineBtn.disabled = true;
+                warningBox.style.display = 'block';
+            } else {
+                lifelineBtn.disabled = false;
+                warningBox.style.display = 'none';
             }
 
-            totalEliminated += count;
-            updatePlayerStatsUI();
-
-            // Gửi lệnh sang màn hình Display
-            channel.postMessage({ action: 'SHOW_ELIMINATION', count: count });
-        }
-    </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Show - Controller</title>
-    <!-- Thư viện SheetJS đọc/ghi Excel -->
-    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-    <style>
-        * {
-            box-sizing: border-box;
-            font-family: 'Bahnschrift', 'Segoe UI', sans-serif !important;
-            margin: 0;
-            padding: 0;
+            // Gửi dữ liệu thô sang Display Stage
+            channel.postMessage({ action: 'LOAD_QUESTION', questionData: q });
         }
 
-        body {
-            background-color: #0f081d;
-            color: #ffffff;
-            padding: 25px;
-            min-height: 100vh;
+        function prevQuestion() {
+            if (currentQIndex > 0) {
+                currentQIndex--;
+                loadCurrentQuestion();
+            }
         }
 
-        .header-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #3b1d6e;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
+        function nextQuestion() {
+            if (currentQIndex < questions.length - 1) {
+                currentQIndex++;
+                loadCurrentQuestion();
+            }
         }
 
-        .header-title {
-            font-size: 1.6rem;
-            color: #c084fc;
-            font-weight: bold;
+        function sendAnimateQuestion() {
+            channel.postMessage({ action: 'ANIMATE_QUESTION' });
         }
 
-        .control-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+        function sendAnimateOption(key) {
+            channel.postMessage({ action: 'ANIMATE_OPTION', key: key });
         }
 
-        .panel-box {
-            background: #180d2b;
-            border: 1px solid #3b1d6e;
-            padding: 20px;
-            border-radius: 12px;
+        function sendCorrectAnswer() {
+            const q = questions[currentQIndex];
+            channel.postMessage({ action: 'SHOW_CORRECT_ANSWER', correctKey: q.correct });
         }
 
-        .panel-title {
-            font-size: 1.2rem;
-            color: #a855f7;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #2e1557;
-            padding-bottom: 8px;
-            font-weight: bold;
+        function use5050() {
+            if (currentQIndex === 0) return; // Khóa ở câu 1
+            const q = questions[currentQIndex];
+            const wrongKeys = ['A', 'B', 'C', 'D'].filter(k => k !== q.correct);
+            // Chọn ngẫu nhiên 2 đáp án sai để loại bỏ
+            wrongKeys.sort(() => Math.random() - 0.5);
+            const eliminatedKeys = wrongKeys.slice(0, 2);
+
+            channel.postMessage({ action: 'APPLY_5050', eliminatedKeys: eliminatedKeys });
         }
 
-        .btn {
-            background: #6b21a8;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin: 5px 0;
-            transition: 0.2s;
+        // 3. EXCEL IMPORT & SAMPLE
+        function downloadSampleExcel() {
+            const data = [
+                ["STT", "Chủ đề", "Câu hỏi", "Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D", "Đáp án đúng"],
+                [1, "Toán Học", "Câu 1: 1 + 1 bằng mấy?", "1", "2", "3", "4", "B"],
+                [2, "Khoa Học", "Câu 2: Nước sôi ở bao nhiêu độ C?", "50°C", "80°C", "100°C", "120°C", "C"]
+            ];
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "DeThi");
+            XLSX.writeFile(wb, "Mau_De_Thi.xlsx");
         }
 
-        .btn:hover { background: #9333ea; }
-        .btn-danger { background: #be0000; }
-        .btn-danger:hover { background: #e00000; }
-        .btn-secondary { background: #374151; }
-        .btn-secondary:hover { background: #4b5563; }
+        function importExcel(e) {
+            const file = e.target.files[0];
+            if (!file) return;
 
-        input[type="file"] { display: none; }
-        .file-label {
-            display: inline-block;
-            background: #2563eb;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+
+                if (jsonData.length > 0) {
+                    questions = jsonData.map(row => ({
+                        topic: row["Chủ đề"] || "Chung",
+                        question: row["Câu hỏi"] || "",
+                        options: {
+                            A: String(row["Đáp án A"] || ""),
+                            B: String(row["Đáp án B"] || ""),
+                            C: String(row["Đáp án C"] || ""),
+                            D: String(row["Đáp án D"] || "")
+                        },
+                        correct: String(row["Đáp án đúng"] || "A").trim().toUpperCase()
+                    }));
+
+                    topics = [...new Set(questions.map(q => q.topic))];
+                    currentQIndex = 0;
+                    renderTopicControls();
+                    loadCurrentQuestion();
+                    document.getElementById('file-status').innerText = `✅ Đã tải ${questions.length} câu hỏi từ Excel.`;
+                }
+            };
+            reader.readAsArrayBuffer(file);
         }
 
-        .stats-info {
-            background: #0d0618;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="header-bar">
-        <div class="header-title">🎛️ BẢNG ĐIỀU KHIỂN (CONTROLLER)</div>
-        <button class="btn btn-secondary" onclick="openDisplayWindow()">↗️ Mở Trang Display</button>
-    </div>
-
-    <div class="control-grid">
-        
-        <!-- 1. CẤU HÌNH ĐỀ THI EXCEL -->
-        <div class="panel-box">
-            <div class="panel-title">1. Quản Lý Đề Thi (.xlsx)</div>
-            <button class="btn btn-secondary" onclick="downloadSampleExcel()">📥 Tải File Mẫu Excel</button>
-            <br><br>
-            <label class="file-label" for="excel-input">📂 Nhập File Đề (.xlsx)</label>
-            <input type="file" id="excel-input" accept=".xlsx, .xls" onchange="importExcel(event)">
-            <div id="file-status" class="stats-info">Chưa tải file đề. Đang dùng các chủ đề mặc định.</div>
-        </div>
-
-        <!-- 2. MÔ PHỎNG 100 NGƯỜI CHƠI -->
-        <div class="panel-box">
-            <div class="panel-title">2. Mô Phỏng 100 Người Chơi (IQ System)</div>
-            <button class="btn" onclick="initPlayers()">🔄 Khởi Tạo Mới 100 Người Chơi</button>
-            <div id="player-stats" class="stats-info">Đang khởi tạo...</div>
-        </div>
-
-        <!-- 3. ĐIỀU KHIỂN CÁC CHỦ ĐỀ -->
-        <div class="panel-box">
-            <div class="panel-title">3. Điều Khiển Chủ Đề</div>
-            <div id="topic-buttons" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
-            <br>
-            <button class="btn btn-secondary" onclick="resetTopics()">↺ Reset Trạng Thái Chủ Đề</button>
-        </div>
-
-        <!-- 4. ĐIỀU KHIỂN LOẠI NGƯỜI CHƠI -->
-        <div class="panel-box">
-            <div class="panel-title">4. Màn Hình Số Người Trả Lời Sai</div>
-            <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 12px;">
-                Bấm nút dưới đây sau mỗi câu hỏi để kích hoạt màn hình đếm số người bị loại (nhảy số ngẫu nhiên không theo nhịp).
-            </p>
-            <button class="btn btn-danger" style="font-size: 1.1rem; padding: 12px 24px;" onclick="triggerElimination()">
-                🚨 Hiển Thị Màn Hình Loại Người Chơi
-            </button>
-        </div>
-
-    </div>
-
-    <script>
-        const channel = new BroadcastChannel('game_show_channel');
-
-        let topics = ["Toán Học", "Khoa Học", "Lịch Sử", "Văn Học"];
-        let players = [];
-        let totalEliminated = 0;
-
-        window.onload = function() {
-            initPlayers();
-            syncTopics();
-        };
-
-        function openDisplayWindow() {
-            window.open('display.html', '_blank', 'width=1280,height=720');
-        }
-
-        // MÔ PHỎNG 100 NGƯỜI CHƠI VỚI CHỈ SỐ IQ
+        // 4. MÔ PHỎNG 100 NGƯỜI CHƠI (IQ SYSTEM)
         function initPlayers() {
             players = [];
-            // 1 người có IQ cao nhất (170 - 195)
             const topIQ = Math.floor(Math.random() * (195 - 170 + 1)) + 170;
             players.push({ id: 1, iq: topIQ, status: 'active' });
 
-            // 99 người còn lại (IQ 85 - 140)
             for (let i = 2; i <= 100; i++) {
-                const iq = Math.floor(Math.random() * (140 - 85 + 1)) + 85;
-                players.push({ id: i, iq: iq, status: 'active' });
+                players.push({ id: i, iq: Math.floor(Math.random() * (140 - 85 + 1)) + 85, status: 'active' });
             }
-
             totalEliminated = 0;
-            players.sort(() => Math.random() - 0.5);
             updatePlayerStatsUI();
         }
 
         function updatePlayerStatsUI() {
             const activeCount = players.filter(p => p.status === 'active').length;
             const topPlayer = players.reduce((max, p) => p.iq > max.iq ? p : max, players[0]);
-
             document.getElementById('player-stats').innerHTML = `
-                • Tổng số người chơi: <b>100</b><br>
-                • Còn lại: <b style="color:#4ade80">${activeCount}</b> | Đã bị loại: <b style="color:#f87171">${totalEliminated}</b><br>
-                • Người có IQ cao nhất: <b>IQ ${topPlayer.iq}</b> (${topPlayer.status === 'active' ? 'Còn thi đấu' : 'Đã bị loại'})
+                • Còn thi đấu: <b style="color:#4ade80">${activeCount}</b> | Bị loại: <b style="color:#f87171">${totalEliminated}</b><br>
+                • Top 1 IQ: <b>IQ ${topPlayer.iq}</b> (${topPlayer.status === 'active' ? 'Còn thi đấu' : 'Đã loại'})
             `;
         }
 
-        // TẠO VÀ NHẬP FILE EXCEL
-        function downloadSampleExcel() {
-            const data = [
-                ["STT", "Chủ đề", "Câu hỏi", "Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D", "Đáp án đúng"],
-                [1, "Toán Học", "1 + 1 bằng mấy?", "1", "2", "3", "4", "B"],
-                [2, "Khoa Học", "Nước sôi ở bao nhiêu độ C?", "50°C", "80°C", "100°C", "120°C", "C"],
-                [3, "Lịch Sử", "Năm 1945 có sự kiện gì?", "Cách mạng Tháng 8", "Điện Biên Phủ", "Đổi mới", "30/4", "A"]
-            ];
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "DeThiSample");
-            XLSX.writeFile(wb, "Mau_De_Thi.xlsx");
-        }
-
-        function importExcel(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
-
-                const extractedTopics = [...new Set(jsonData.map(row => row["Chủ đề"]).filter(Boolean))];
-                if (extractedTopics.length > 0) {
-                    topics = extractedTopics;
-                    syncTopics();
-                    document.getElementById('file-status').innerHTML = `✅ Đã tải ${jsonData.length} câu hỏi. Danh sách chủ đề: <b>${extractedTopics.join(', ')}</b>`;
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        // ĐIỀU KHIỂN CHỦ ĐỀ
-        function syncTopics() {
-            renderTopicButtons();
-            channel.postMessage({ action: 'RENDER_TOPICS', topics: topics });
-        }
-
-        function renderTopicButtons() {
-            const container = document.getElementById('topic-buttons');
-            container.innerHTML = '';
-            topics.forEach(topic => {
-                const btn = document.createElement('button');
-                btn.className = 'btn';
-                btn.innerText = topic;
-                btn.onclick = () => {
-                    channel.postMessage({ action: 'SELECT_TOPIC', topicName: topic });
-                };
-                container.appendChild(btn);
-            });
-        }
-
-        function resetTopics() {
-            channel.postMessage({ action: 'RESET_TOPICS' });
-        }
-
-        // KÍCH HOẠT MÀN HÌNH LOẠI NGƯỜI CHƠI
         function triggerElimination() {
             const activePlayers = players.filter(p => p.status === 'active');
             if (activePlayers.length === 0) return;
 
-            // Tính toán số người bị loại ở vòng này
-            let eliminatedCount = Math.floor(activePlayers.length * (Math.random() * 0.2 + 0.05));
-            if (eliminatedCount === 0 && activePlayers.length > 1) eliminatedCount = 1;
+            let countToEliminate = Math.floor(activePlayers.length * (Math.random() * 0.2 + 0.05));
+            if (countToEliminate === 0 && activePlayers.length > 1) countToEliminate = 1;
 
-            // Loại ưu tiên những người IQ thấp hơn trước
             activePlayers.sort((a, b) => a.iq - b.iq);
+            let eliminatedNow = 0;
 
-            let count = 0;
-            for (let player of activePlayers) {
-                if (count < eliminatedCount) {
-                    if (player.iq >= 170 && Math.random() > 0.05) continue; // Tỷ lệ bị loại của IQ siêu cao cực thấp
-                    player.status = 'eliminated';
-                    count++;
+            for (let p of activePlayers) {
+                if (eliminatedNow < countToEliminate) {
+                    if (p.iq >= 170 && Math.random() > 0.05) continue;
+                    p.status = 'eliminated';
+                    eliminatedNow++;
                 }
             }
 
-            totalEliminated += count;
+            totalEliminated += eliminatedNow;
             updatePlayerStatsUI();
-
-            // Gửi lệnh sang màn hình Display
-            channel.postMessage({ action: 'SHOW_ELIMINATION', count: count });
+            channel.postMessage({ action: 'SHOW_ELIMINATION', count: eliminatedNow });
         }
     </script>
 </body>
