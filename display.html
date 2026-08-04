@@ -13,7 +13,7 @@
     }
 
     body {
-      background: radial-gradient(circle at center, #2e0854 0%, #0d021a 85%);
+      background: radial-gradient(circle at center, #320a5c 0%, #0d021a 85%);
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -21,14 +21,145 @@
       color: #fff;
       padding: 20px;
       overflow: hidden;
+      position: relative;
     }
 
+    /* Đường sáng quang học trên nền */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.4), transparent);
+      pointer-events: none;
+    }
+
+    /* Nút kích hoạt âm thanh trình duyệt */
+    .audio-unlock {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: #e74c3c;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 999;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      animation: pulse-red 1.5s infinite;
+      user-select: none;
+    }
+
+    .audio-unlock.unlocked {
+      background: rgba(46, 204, 113, 0.3);
+      color: #2ecc71;
+      border: 1px solid #2ecc71;
+      animation: none;
+    }
+
+    @keyframes pulse-red {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    /* --- PHẦN 1: MÀN HÌNH CHỦ ĐỀ --- */
+    .topics-container {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      z-index: 5;
+      position: absolute;
+      transition: opacity 0.5s ease;
+    }
+
+    .topics-container.hidden {
+      display: none;
+      pointer-events: none;
+    }
+
+    /* Thẻ chủ đề thiết kế chuẩn hình ảnh */
+    .topic-card-outer {
+      background: linear-gradient(180deg, #be73f5 0%, #893ad2 100%);
+      border-radius: 22px;
+      padding: 18px 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 15px rgba(168, 85, 247, 0.3);
+      transition: all 0.5s ease;
+    }
+
+    .topic-card-inner {
+      background: #1c0733;
+      border-radius: 12px;
+      padding: 22px 15px;
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+    }
+
+    /* Animation cho Chủ Đề được chọn: Wipe Down to Center */
+    .topic-card-outer.anim-wipe-center {
+      animation: wipeDownCenter 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+      z-index: 10;
+    }
+
+    /* Animation cho Chủ Đề KHÔNG được chọn: Zoom Out */
+    .topic-card-outer.anim-zoom-out {
+      animation: zoomOut 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    @keyframes wipeDownCenter {
+      0% {
+        clip-path: inset(0 0 100% 0);
+        transform: translateY(-40px);
+        opacity: 0.3;
+      }
+      50% {
+        clip-path: inset(0 0 0 0);
+        transform: translateY(0);
+        opacity: 1;
+      }
+      100% {
+        clip-path: inset(0 0 0 0);
+        transform: translateY(0) scale(1.06);
+        box-shadow: 0 0 40px rgba(190, 115, 245, 0.9);
+      }
+    }
+
+    @keyframes zoomOut {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(0.1);
+        opacity: 0;
+      }
+    }
+
+    /* --- PHẦN 2: MÀN HÌNH CÂU HỎI & ĐÁP ÁN --- */
     .game-container {
       width: 100%;
       max-width: 960px;
+      transition: opacity 0.5s ease;
+      position: relative;
+      z-index: 2;
     }
 
-    /* Tabs phía trên */
+    .game-container.hidden {
+      display: none;
+    }
+
+    /* Header Tabs */
     .header-tabs {
       display: flex;
       justify-content: space-between;
@@ -48,15 +179,31 @@
       box-shadow: 0 -4px 10px rgba(0,0,0,0.5);
     }
 
+    /* Tab trợ giúp gọn đẹp */
     .tab-right {
       background: #200a38;
-      padding: 8px 25px;
+      padding: 6px 18px;
       border-radius: 12px 12px 0 0;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #27ae60;
-      letter-spacing: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
       box-shadow: 0 -4px 10px rgba(0,0,0,0.5);
+      transition: opacity 0.3s ease;
+    }
+
+    .tab-right.hidden-lifelines {
+      display: none !important;
+    }
+
+    .lifeline-badge {
+      color: #27ae60;
+      font-weight: 800;
+      font-size: 0.95rem;
+      background: rgba(39, 174, 96, 0.12);
+      padding: 3px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(39, 174, 96, 0.3);
+      letter-spacing: 1px;
     }
 
     /* Khung Câu Hỏi */
@@ -64,7 +211,7 @@
       background: linear-gradient(180deg, #240b3f 0%, #1a0630 100%);
       border: 1px solid #4a1980;
       border-radius: 16px;
-      padding: 45px 30px;
+      padding: 40px 30px;
       text-align: center;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
       position: relative;
@@ -73,7 +220,28 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: opacity 0.3s ease;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s;
+    }
+
+    .question-card.show-question {
+      opacity: 1;
+      visibility: visible;
+      animation: wipeUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    @keyframes wipeUp {
+      0% {
+        clip-path: inset(100% 0 0 0);
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      100% {
+        clip-path: inset(0 0 0 0);
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     .question-text {
@@ -92,12 +260,33 @@
       gap: 15px;
       margin-top: 15px;
       position: relative;
-      transition: opacity 0.3s ease;
     }
 
     .answer-wrapper {
       position: relative;
       padding-top: 14px;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    /* Animation Wipe Down từng đáp án */
+    .answer-wrapper.show-answer {
+      opacity: 1;
+      visibility: visible;
+      animation: wipeDown 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    @keyframes wipeDown {
+      0% {
+        clip-path: inset(0 0 100% 0);
+        transform: translateY(-25px);
+        opacity: 0;
+      }
+      100% {
+        clip-path: inset(0 0 0 0);
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     .badge {
@@ -134,7 +323,7 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.5);
     }
 
-    /* Các Trạng Thái Đáp Án */
+    /* Trạng Thái Đáp Án */
     .answer-card.selected {
       background: linear-gradient(180deg, #d35400 0%, #a04000 100%);
       border-color: #f39c12;
@@ -161,12 +350,36 @@
     }
   </style>
 </head>
-<body>
+<body onclick="enableAudio()">
 
-  <div class="game-container">
+  <!-- Nút kích hoạt âm thanh -->
+  <div id="audioBtn" class="audio-unlock">🔔 Bấm vào đây để bật âm thanh</div>
+
+  <!-- Audio Elements -->
+  <audio id="sfxSelect" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+  <audio id="sfxCorrect" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+  <audio id="sfxWrong" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/825/825-preview.mp3"></audio>
+  <audio id="sfxTopic" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
+
+  <!-- PHẦN 1: MÀN HÌNH CHỦ ĐỀ -->
+  <div class="topics-container" id="topicsScreen">
+    <div class="topic-card-outer" id="topicCard1">
+      <div class="topic-card-inner" id="topicText1">ÂM NHẠC</div>
+    </div>
+    <div class="topic-card-outer" id="topicCard2">
+      <div class="topic-card-inner" id="topicText2">PHIM ẢNH</div>
+    </div>
+  </div>
+
+  <!-- PHẦN 2: MÀN HÌNH CÂU HỎI & ĐÁP ÁN -->
+  <div class="game-container hidden" id="questionScreen">
     <div class="header-tabs">
       <div class="tab-left">1 ĐẤU 100</div>
-      <div class="tab-right" id="lifelines">25% 50% 75%</div>
+      <div class="tab-right hidden-lifelines" id="lifelinesTab">
+        <span class="lifeline-badge">25%</span>
+        <span class="lifeline-badge">50%</span>
+        <span class="lifeline-badge">75%</span>
+      </div>
     </div>
     
     <div class="question-card" id="qCard">
@@ -174,15 +387,15 @@
     </div>
 
     <div class="answers-grid" id="ansGrid">
-      <div class="answer-wrapper">
+      <div class="answer-wrapper" id="wrapA">
         <div class="badge">A</div>
         <div class="answer-card" id="ansA">ĐÁP ÁN A</div>
       </div>
-      <div class="answer-wrapper">
+      <div class="answer-wrapper" id="wrapB">
         <div class="badge">B</div>
         <div class="answer-card" id="ansB">ĐÁP ÁN B</div>
       </div>
-      <div class="answer-wrapper">
+      <div class="answer-wrapper" id="wrapC">
         <div class="badge">C</div>
         <div class="answer-card" id="ansC">ĐÁP ÁN C</div>
       </div>
@@ -191,50 +404,148 @@
 
   <script>
     const channel = new BroadcastChannel('dt100_channel');
+    let audioEnabled = false;
+    let prevState = {};
+
+    const sfxSelect = document.getElementById('sfxSelect');
+    const sfxCorrect = document.getElementById('sfxCorrect');
+    const sfxWrong = document.getElementById('sfxWrong');
+    const sfxTopic = document.getElementById('sfxTopic');
+
+    function enableAudio() {
+      if (audioEnabled) return;
+      audioEnabled = true;
+      [sfxSelect, sfxCorrect, sfxWrong, sfxTopic].forEach(audio => {
+        audio.play().then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+        }).catch(() => {});
+      });
+
+      const btn = document.getElementById('audioBtn');
+      btn.classList.add('unlocked');
+      btn.innerText = '🔊 Âm thanh đã sẵn sàng';
+    }
+
+    function playSound(audioEl) {
+      if (!audioEnabled || !audioEl) return;
+      audioEl.currentTime = 0;
+      audioEl.play().catch(e => console.log('Chờ âm thanh:', e));
+    }
 
     function updateDisplay(data) {
       if (!data) return;
-      
-      const qBox = document.getElementById('questionBox');
-      const qCard = document.getElementById('qCard');
-      const ansGrid = document.getElementById('ansGrid');
-      const ansA = document.getElementById('ansA');
-      const ansB = document.getElementById('ansB');
-      const ansC = document.getElementById('ansC');
-      const lifelines = document.getElementById('lifelines');
 
-      if (data.question !== undefined) qBox.innerText = data.question;
-      if (data.optionA !== undefined) ansA.innerText = data.optionA;
-      if (data.optionB !== undefined) ansB.innerText = data.optionB;
-      if (data.optionC !== undefined) ansC.innerText = data.optionC;
-      if (data.lifelines !== undefined) lifelines.innerText = data.lifelines;
+      const topicsScreen = document.getElementById('topicsScreen');
+      const questionScreen = document.getElementById('questionScreen');
 
-      // Ẩn / Hiện
-      qCard.style.opacity = data.showQuestion ? '1' : '0';
-      ansGrid.style.opacity = data.showAnswers ? '1' : '0';
+      // 1. CHUYỂN ĐỔI MÀN HÌNH (Chủ đề / Câu hỏi)
+      if (data.mode === 'topics') {
+        topicsScreen.classList.remove('hidden');
+        questionScreen.classList.add('hidden');
 
-      // Reset hiệu ứng
-      [ansA, ansB, ansC].forEach(el => el.className = 'answer-card');
+        document.getElementById('topicText1').innerText = data.topic1 || 'ÂM NHẠC';
+        document.getElementById('topicText2').innerText = data.topic2 || 'PHIM ẢNH';
 
-      // Đánh dấu đáp án được chọn (Chờ chốt)
-      if (data.selectedOption) {
-        const selEl = document.getElementById('ans' + data.selectedOption);
-        if (selEl) selEl.classList.add('selected');
-      }
+        const card1 = document.getElementById('topicCard1');
+        const card2 = document.getElementById('topicCard2');
 
-      // Hiện đáp án Đúng / Sai
-      if (data.revealed && data.correctOption) {
-        ['A', 'B', 'C'].forEach(opt => {
-          const el = document.getElementById('ans' + opt);
-          if (opt === data.correctOption) {
-            el.classList.remove('selected');
-            el.classList.add('correct');
+        card1.className = 'topic-card-outer';
+        card2.className = 'topic-card-outer';
+
+        if (data.selectedTopic === 1) {
+          card1.classList.add('anim-wipe-center');
+          card2.classList.add('anim-zoom-out');
+          if (prevState.selectedTopic !== 1) playSound(sfxTopic);
+        } else if (data.selectedTopic === 2) {
+          card2.classList.add('anim-wipe-center');
+          card1.classList.add('anim-zoom-out');
+          if (prevState.selectedTopic !== 2) playSound(sfxTopic);
+        }
+
+      } else {
+        // Mode 'question'
+        topicsScreen.classList.add('hidden');
+        questionScreen.classList.remove('hidden');
+
+        const qBox = document.getElementById('questionBox');
+        const ansA = document.getElementById('ansA');
+        const ansB = document.getElementById('ansB');
+        const ansC = document.getElementById('ansC');
+        const qCard = document.getElementById('qCard');
+        const wrapA = document.getElementById('wrapA');
+        const wrapB = document.getElementById('wrapB');
+        const wrapC = document.getElementById('wrapC');
+        const lifelinesTab = document.getElementById('lifelinesTab');
+
+        if (data.question !== undefined) qBox.innerText = data.question;
+        if (data.optionA !== undefined) ansA.innerText = data.optionA;
+        if (data.optionB !== undefined) ansB.innerText = data.optionB;
+        if (data.optionC !== undefined) ansC.innerText = data.optionC;
+
+        // Quy tắc Trợ giúp: Ở Câu 1 thì ẨN trợ giúp, từ Câu 2 trở đi mới HIỆN
+        if (parseInt(data.questionNum) === 1) {
+          lifelinesTab.classList.add('hidden-lifelines');
+        } else {
+          lifelinesTab.classList.remove('hidden-lifelines');
+        }
+
+        // Animation Câu Hỏi (Wipe Up)
+        if (data.showQuestion) {
+          qCard.classList.add('show-question');
+        } else {
+          qCard.classList.remove('show-question');
+        }
+
+        // Animation Từng Đáp Án (Wipe Down)
+        if (data.showAnsA) wrapA.classList.add('show-answer');
+        else wrapA.classList.remove('show-answer');
+
+        if (data.showAnsB) wrapB.classList.add('show-answer');
+        else wrapB.classList.remove('show-answer');
+
+        if (data.showAnsC) wrapC.classList.add('show-answer');
+        else wrapC.classList.remove('show-answer');
+
+        // Reset màu đáp án
+        [ansA, ansB, ansC].forEach(el => el.className = 'answer-card');
+
+        // Đáp án được chốt (Màu cam)
+        if (data.selectedOption) {
+          const selEl = document.getElementById('ans' + data.selectedOption);
+          if (selEl) selEl.classList.add('selected');
+        }
+
+        // Âm thanh chốt đáp án
+        if (data.selectedOption && data.selectedOption !== prevState.selectedOption && !data.revealed) {
+          playSound(sfxSelect);
+        }
+
+        // Âm thanh & Hiển thị Đúng / Sai
+        if (data.revealed && !prevState.revealed) {
+          if (data.selectedOption) {
+            if (data.selectedOption === data.correctOption) playSound(sfxCorrect);
+            else playSound(sfxWrong);
           } else {
-            el.classList.remove('selected');
-            el.classList.add('wrong');
+            playSound(sfxCorrect);
           }
-        });
+        }
+
+        if (data.revealed && data.correctOption) {
+          ['A', 'B', 'C'].forEach(opt => {
+            const el = document.getElementById('ans' + opt);
+            if (opt === data.correctOption) {
+              el.classList.remove('selected');
+              el.classList.add('correct');
+            } else {
+              el.classList.remove('selected');
+              el.classList.add('wrong');
+            }
+          });
+        }
       }
+
+      prevState = JSON.parse(JSON.stringify(data));
     }
 
     channel.onmessage = (event) => updateDisplay(event.data);
@@ -242,7 +553,6 @@
       if (e.key === 'dt100_state') updateDisplay(JSON.parse(e.newValue));
     });
 
-    // Khởi tạo trạng thái ban đầu
     const saved = localStorage.getItem('dt100_state');
     if (saved) updateDisplay(JSON.parse(saved));
   </script>
