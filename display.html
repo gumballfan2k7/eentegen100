@@ -38,7 +38,7 @@
             display: flex;
         }
 
-        /* 1. LỰA CHỌN CHỦ ĐỀ (TỐI ĐA 2 CHỦ ĐỀ) */
+        /* 1. HIỂN THỊ CHỦ ĐỀ (MAX 2 CHỦ ĐỀ) */
         .topics-wrapper {
             display: flex;
             gap: 60px;
@@ -78,77 +78,115 @@
             pointer-events: none;
         }
 
-        /* 2. CÂU HỎI & ĐÁP ÁN (ANIMATIONS) */
-        .qa-container {
+        /* 2. CÂU HỎI VÀ TABS TRÊN (1 ĐẤU 100 & 25% 50% 75%) */
+        .qa-wrapper {
+            width: 90%;
+            max-width: 1100px;
             display: flex;
             flex-direction: column;
-            gap: 30px;
-            width: 85%;
-            max-width: 1100px;
+            gap: 25px;
+            position: relative;
         }
 
-        /* Question Wipe Up Animation */
+        .question-container {
+            position: relative;
+            margin-top: 35px;
+        }
+
+        /* Tabs phía trên khung câu hỏi */
+        .tab-left {
+            position: absolute;
+            top: -36px;
+            left: 30px;
+            background: #3b1859;
+            border: 2px solid #a855f7;
+            border-bottom: none;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            padding: 6px 22px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #e0aaff;
+            letter-spacing: 1px;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+        }
+
+        .tab-right {
+            position: absolute;
+            top: -36px;
+            right: 30px;
+            background: #23103c;
+            border: 2px solid #5b21b6;
+            border-bottom: none;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            padding: 6px 22px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: flex;
+            gap: 18px;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+        }
+
+        .lifeline-val {
+            color: #4ade80;
+            transition: color 0.4s, opacity 0.4s;
+        }
+
+        /* Bôi xám khi đã sử dụng trợ giúp */
+        .lifeline-val.used {
+            color: #4b5563 !important;
+            opacity: 0.4;
+        }
+
+        /* Question Box - Wipe Up Animation */
         .question-box {
-            background: linear-gradient(135deg, #4c1d95, #2e1065);
+            background: linear-gradient(135deg, #3b1859, #23103c);
             border: 3px solid #a855f7;
             border-radius: 20px;
-            padding: 30px 40px;
-            font-size: 2rem;
+            padding: 35px 40px;
+            font-size: 2.2rem;
             font-weight: bold;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
             display: none;
         }
 
         @keyframes wipeUp {
-            0% {
-                clip-path: inset(100% 0 0 0);
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            100% {
-                clip-path: inset(0 0 0 0);
-                opacity: 1;
-                transform: translateY(0);
-            }
+            0% { clip-path: inset(100% 0 0 0); opacity: 0; transform: translateY(30px); }
+            100% { clip-path: inset(0 0 0 0); opacity: 1; transform: translateY(0); }
         }
 
         .question-box.wipe-up {
             display: block;
-            animation: wipeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: wipeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
+        /* LƯỚI TỐI ĐA 3 ĐÁP ÁN (A, B, C) */
         .options-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
         }
 
-        /* Options Wipe Down Animation */
         .option-card {
-            background: rgba(30, 15, 60, 0.85);
+            background: rgba(35, 16, 60, 0.9);
             border: 2px solid #6b21a8;
             border-radius: 16px;
-            padding: 20px 30px;
+            padding: 22px 15px;
             font-size: 1.5rem;
             font-weight: bold;
             display: none;
             align-items: center;
+            justify-content: center;
+            text-align: center;
             box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            transition: background-color 0.3s, border-color 0.3s;
+            transition: all 0.3s ease;
         }
 
         @keyframes wipeDown {
-            0% {
-                clip-path: inset(0 0 100% 0);
-                opacity: 0;
-                transform: translateY(-40px);
-            }
-            100% {
-                clip-path: inset(0 0 0 0);
-                opacity: 1;
-                transform: translateY(0);
-            }
+            0% { clip-path: inset(0 0 100% 0); opacity: 0; transform: translateY(-30px); }
+            100% { clip-path: inset(0 0 0 0); opacity: 1; transform: translateY(0); }
         }
 
         .option-card.wipe-down {
@@ -156,22 +194,35 @@
             animation: wipeDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
+        /* Người chơi chọn (Màu cam/vàng) */
+        .option-card.player-selected {
+            background: linear-gradient(135deg, #d97706, #b45309) !important;
+            border-color: #f59e0b !important;
+            box-shadow: 0 0 30px #f59e0b;
+        }
+
+        /* Đáp án đúng (Màu xanh lá) */
         .option-card.correct {
             background: linear-gradient(135deg, #15803d, #166534) !important;
             border-color: #22c55e !important;
-            box-shadow: 0 0 25px #22c55e;
-        }
-
-        .option-card.eliminated {
-            opacity: 0.25;
-            text-decoration: line-through;
+            box-shadow: 0 0 30px #22c55e;
         }
 
         .option-prefix {
-            color: #c084fc;
-            margin-right: 15px;
-            font-size: 1.8rem;
+            background: #6b21a8;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 1.2rem;
+            flex-shrink: 0;
         }
+
+        .option-card.player-selected .option-prefix { background: #b45309; }
+        .option-card.correct .option-prefix { background: #166534; }
 
         /* 3. MÀN HÌNH BỊ LOẠI (CARD TÍM / ĐỎ) */
         .number-card {
@@ -199,25 +250,36 @@
 </head>
 <body>
 
-    <!-- MÀN HÌNH 1: CHỦ ĐỀ (TỐI ĐA 2 CHỦ ĐỀ) -->
+    <!-- MÀN HÌNH CHỦ ĐỀ -->
     <div id="screen-topics" class="screen-container active">
         <div id="topics-wrapper" class="topics-wrapper"></div>
     </div>
 
-    <!-- MÀN HÌNH 2: CÂU HỎI VÀ ĐÁP ÁN -->
+    <!-- MÀN HÌNH CÂU HỎI VÀ ĐÁP ÁN -->
     <div id="screen-qa" class="screen-container">
-        <div class="qa-container">
-            <div id="question-box" class="question-box"></div>
+        <div class="qa-wrapper">
+            <div class="question-container">
+                <!-- Thẻ tiêu đề phía trên khung câu hỏi -->
+                <div class="tab-left">1 ĐẤU 100</div>
+                <div class="tab-right">
+                    <span id="ll-25" class="lifeline-val">25%</span>
+                    <span id="ll-50" class="lifeline-val">50%</span>
+                    <span id="ll-75" class="lifeline-val">75%</span>
+                </div>
+
+                <div id="question-box" class="question-box"></div>
+            </div>
+
+            <!-- Tối đa 3 đáp án (A, B, C) -->
             <div class="options-grid">
-                <div id="opt-A" class="option-card"><span class="option-prefix">A.</span><span class="opt-text"></span></div>
-                <div id="opt-B" class="option-card"><span class="option-prefix">B.</span><span class="opt-text"></span></div>
-                <div id="opt-C" class="option-card"><span class="option-prefix">C.</span><span class="opt-text"></span></div>
-                <div id="opt-D" class="option-card"><span class="option-prefix">D.</span><span class="opt-text"></span></div>
+                <div id="opt-A" class="option-card"><span class="option-prefix">A</span><span class="opt-text"></span></div>
+                <div id="opt-B" class="option-card"><span class="option-prefix">B</span><span class="opt-text"></span></div>
+                <div id="opt-C" class="option-card"><span class="option-prefix">C</span><span class="opt-text"></span></div>
             </div>
         </div>
     </div>
 
-    <!-- MÀN HÌNH 3: SỐ NGƯỜI BỊ LOẠI -->
+    <!-- MÀN HÌNH ĐẾM SỐ NGƯỜI BỊ LOẠI -->
     <div id="screen-elimination" class="screen-container">
         <div id="number-card" class="number-card purple">
             <span id="eliminated-count-text">0</span>
@@ -226,6 +288,7 @@
 
     <script>
         const channel = new BroadcastChannel('game_show_channel');
+        let pendingEliminatedCount = 0;
 
         function setScreen(screenId) {
             document.querySelectorAll('.screen-container').forEach(s => s.classList.remove('active'));
@@ -235,15 +298,12 @@
         channel.onmessage = function(event) {
             const data = event.data;
 
-            // 1. CHỦ ĐỀ
+            // CHỦ ĐỀ
             if (data.action === 'SHOW_TOPICS') {
                 setScreen('screen-topics');
                 const wrapper = document.getElementById('topics-wrapper');
                 wrapper.innerHTML = '';
-                
-                // Chỉ hiển thị tối đa 2 chủ đề
-                const topicsToShow = data.topics.slice(0, 2);
-                topicsToShow.forEach(topic => {
+                data.topics.slice(0, 2).forEach(topic => {
                     const card = document.createElement('div');
                     card.className = 'topic-card';
                     card.dataset.topic = topic;
@@ -253,8 +313,7 @@
             } 
             else if (data.action === 'SELECT_TOPIC') {
                 setScreen('screen-topics');
-                const cards = document.querySelectorAll('.topic-card');
-                cards.forEach(card => {
+                document.querySelectorAll('.topic-card').forEach(card => {
                     if (card.dataset.topic === data.topicName) {
                         card.classList.remove('zoom-out');
                         card.classList.add('selected');
@@ -265,17 +324,28 @@
                 });
             }
 
-            // 2. CÂU HỎI (Wipe Up) & ĐÁP ÁN (Wipe Down)
+            // BÔI XÁM QUYỀN TRỢ GIÚP (25%, 50%, 75%)
+            else if (data.action === 'UPDATE_LIFELINES') {
+                ['25', '50', '75'].forEach(val => {
+                    const el = document.getElementById(`ll-${val}`);
+                    if (data.used[val]) {
+                        el.classList.add('used');
+                    } else {
+                        el.classList.remove('used');
+                    }
+                });
+            }
+
+            // NẠP CÂU HỎI
             else if (data.action === 'LOAD_QUESTION') {
                 setScreen('screen-qa');
                 const qBox = document.getElementById('question-box');
                 qBox.classList.remove('wipe-up');
                 qBox.innerText = data.questionData.question;
 
-                // Reset options
-                ['A', 'B', 'C', 'D'].forEach(key => {
+                ['A', 'B', 'C'].forEach(key => {
                     const opt = document.getElementById(`opt-${key}`);
-                    opt.classList.remove('wipe-down', 'correct', 'eliminated');
+                    opt.classList.remove('wipe-down', 'correct', 'player-selected');
                     opt.querySelector('.opt-text').innerText = data.questionData.options[key] || '';
                 });
             }
@@ -283,7 +353,7 @@
                 setScreen('screen-qa');
                 const qBox = document.getElementById('question-box');
                 qBox.classList.remove('wipe-up');
-                void qBox.offsetWidth; // Trigger reflow
+                void qBox.offsetWidth;
                 qBox.classList.add('wipe-up');
             }
             else if (data.action === 'ANIMATE_OPTION') {
@@ -295,41 +365,55 @@
                     opt.classList.add('wipe-down');
                 }
             }
+
+            // NGƯỜI CHƠI CHỌN ĐÁP ÁN
+            else if (data.action === 'SELECT_PLAYER_ANSWER') {
+                ['A', 'B', 'C'].forEach(key => {
+                    document.getElementById(`opt-${key}`).classList.remove('player-selected');
+                });
+                const opt = document.getElementById(`opt-${data.key}`);
+                if (opt) opt.classList.add('player-selected');
+            }
+
+            // HIỂN THỊ ĐÁP ÁN ĐÚNG
             else if (data.action === 'SHOW_CORRECT_ANSWER') {
                 const opt = document.getElementById(`opt-${data.correctKey}`);
                 if (opt) opt.classList.add('correct');
             }
-            else if (data.action === 'APPLY_5050') {
-                data.eliminatedKeys.forEach(key => {
-                    const opt = document.getElementById(`opt-${key}`);
-                    if (opt) opt.classList.add('eliminated');
-                });
+
+            // BƯỚC 1: HIỂN THỊ MÀN HÌNH ĐẾM (CARD TÍM SỐ 0)
+            else if (data.action === 'PREPARE_ELIMINATION') {
+                setScreen('screen-elimination');
+                pendingEliminatedCount = data.count;
+                const card = document.getElementById('number-card');
+                card.className = 'number-card purple';
+                document.getElementById('eliminated-count-text').innerText = '0';
             }
 
-            // 3. ĐẾM SỐ BỊ LOẠI
-            else if (data.action === 'SHOW_ELIMINATION') {
+            // BƯỚC 2: LỘ DIỆN SỐ NGƯỜI SAI (CARD ĐỎ + NHẢY SỐ)
+            else if (data.action === 'REVEAL_ELIMINATION') {
                 setScreen('screen-elimination');
                 const card = document.getElementById('number-card');
                 const countText = document.getElementById('eliminated-count-text');
 
-                card.className = 'number-card purple';
-                countText.innerText = '0';
+                card.className = 'number-card red';
+                let current = 0;
+                const target = pendingEliminatedCount;
 
-                if (data.count === 0) return;
+                if (target === 0) {
+                    countText.innerText = '0';
+                    return;
+                }
 
-                setTimeout(() => {
-                    card.className = 'number-card red';
-                    let current = 0;
-                    function step() {
-                        if (current < data.count) {
-                            current++;
-                            countText.innerText = current;
-                            const randomDelay = Math.floor(Math.random() * 500) + 100;
-                            setTimeout(step, randomDelay);
-                        }
+                function step() {
+                    if (current < target) {
+                        current++;
+                        countText.innerText = current;
+                        const randomInterval = Math.floor(Math.random() * 500) + 100;
+                        setTimeout(step, randomInterval);
                     }
-                    step();
-                }, 600);
+                }
+                step();
             }
         };
     </script>
