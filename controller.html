@@ -6,22 +6,25 @@
   <title>Đấu Trường 100 - Controller</title>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-    body { background: #12122b; color: #fff; padding: 20px; max-width: 850px; margin: 0 auto; }
+    body { background: #111126; color: #fff; padding: 20px; max-width: 900px; margin: 0 auto; }
     h1 { text-align: center; color: #a855f7; margin-bottom: 20px; }
-    .panel { background: #1e1e3e; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #3b3b6d; }
+    .panel { background: #1c1c38; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #383863; }
+    .panel h3 { color: #c084fc; border-bottom: 1px solid #383863; padding-bottom: 8px; margin-bottom: 15px; }
     .form-group { margin-bottom: 15px; }
-    label { display: block; margin-bottom: 6px; font-weight: bold; color: #c084fc; }
-    input[type="text"], textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #4c4c85; background: #0c0c1e; color: #fff; font-size: 1rem; }
+    label { display: block; margin-bottom: 6px; font-weight: bold; color: #e9d5ff; font-size: 0.95rem; }
+    input[type="text"], input[type="number"], textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #4a4a7e; background: #0c0c1a; color: #fff; font-size: 1rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-    button { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: 0.2s; }
+    button { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: all 0.2s; }
     .btn-purple { background: #8b5cf6; color: white; }
     .btn-blue { background: #0ea5e9; color: white; }
     .btn-amber { background: #f59e0b; color: white; }
     .btn-green { background: #10b981; color: white; }
     .btn-red { background: #ef4444; color: white; }
-    button:hover { opacity: 0.85; transform: translateY(-1px); }
-    .radio-group { display: flex; gap: 20px; margin-top: 5px; background: #0c0c1e; padding: 10px; border-radius: 6px; }
+    .btn-dark { background: #374151; color: #d1d5db; }
+    button:hover { opacity: 0.88; transform: translateY(-1px); }
+    .radio-group { display: flex; gap: 20px; margin-top: 5px; background: #0c0c1a; padding: 10px; border-radius: 6px; border: 1px solid #4a4a7e; }
     .radio-group label { color: white; margin: 0; cursor: pointer; }
   </style>
 </head>
@@ -29,9 +32,38 @@
 
   <h1>BẢNG ĐIỀU KHIỂN ĐẤU TRƯỜNG 100</h1>
 
+  <!-- PHẦN 1: QUẢN LÝ MÀN HÌNH CHỦ ĐỀ -->
   <div class="panel">
-    <h3>1. Nhập Nội Dung Câu Hỏi & Đáp Án</h3>
-    <br>
+    <h3>1. Màn Hình Chọn Chủ Đề</h3>
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Chủ đề 1:</label>
+        <input type="text" id="topic1Input" value="ÂM NHẠC">
+      </div>
+      <div class="form-group">
+        <label>Chủ đề 2:</label>
+        <input type="text" id="topic2Input" value="PHIM ẢNH">
+      </div>
+    </div>
+    
+    <div class="btn-group">
+      <button class="btn-purple" onclick="switchMode('topics')">📺 Hiện Màn Hình Chọn Chủ Đề</button>
+      <button class="btn-amber" onclick="selectTopic(1)">🎬 Chọn Chủ Đề 1 (Wipe Down)</button>
+      <button class="btn-amber" onclick="selectTopic(2)">🎬 Chọn Chủ Đề 2 (Wipe Down)</button>
+      <button class="btn-dark" onclick="resetTopics()">🔄 Reset Chủ Đề</button>
+    </div>
+  </div>
+
+  <!-- PHẦN 2: NỘI DUNG CÂU HỎI & TRỢ GIÚP -->
+  <div class="panel">
+    <h3>2. Nhập Nội Dung Câu Hỏi & Đáp Án</h3>
+    
+    <div class="form-group" style="max-width: 200px;">
+      <label>Thứ tự câu hỏi:</label>
+      <input type="number" id="qNumInput" value="1" min="1" onchange="updateQNum()">
+      <small style="color: #a7f3d0;">* Câu 1 tự động ẨN quyền trợ giúp (25%, 50%, 75%).</small>
+    </div>
+
     <div class="form-group">
       <label>Nội dung câu hỏi:</label>
       <textarea id="qInput" rows="2">CÂU HỎI?</textarea>
@@ -53,7 +85,7 @@
     </div>
 
     <div class="form-group">
-      <label>Đáp án Đúng là:</label>
+      <label>Đáp án Đúng:</label>
       <div class="radio-group">
         <label><input type="radio" name="correctOpt" value="A" checked> A</label>
         <label><input type="radio" name="correctOpt" value="B"> B</label>
@@ -61,37 +93,50 @@
       </div>
     </div>
 
-    <div class="form-group">
-      <label>Text trợ giúp (Góc trên phải):</label>
-      <input type="text" id="lifelinesInput" value="25%  50%  75%">
-    </div>
-
-    <button class="btn-purple" onclick="sendData()">💾 Cập Nhật Sang Màn Hình Display</button>
+    <button class="btn-purple" onclick="sendData()">💾 Cập Nhật Nội Dung Sang Display</button>
   </div>
 
+  <!-- PHẦN 3: ĐIỀU KHIỂN ANIMATION VÀ HIỆN THỊ -->
   <div class="panel">
-    <h3>2. Điều Khiển Hiệu Ứng Trình Chiếu</h3>
-    <br>
-    <label>Ẩn / Hiện yếu tố:</label>
-    <div class="btn-group">
-      <button class="btn-blue" onclick="toggleQuestion()">👁️ Ẩn/Hiện Câu Hỏi</button>
-      <button class="btn-blue" onclick="toggleAnswers()">🔘 Ẩn/Hiện 3 Đáp Án</button>
-    </div>
+    <h3>3. Điều Khiển Trình Chiếu Màn Hình Câu Hỏi</h3>
     
-    <br>
-    <label>Chọn đáp án người chơi chốt (Đổi màu cam):</label>
-    <div class="btn-group">
-      <button class="btn-amber" onclick="selectOption('A')">Chọn A</button>
-      <button class="btn-amber" onclick="selectOption('B')">Chọn B</button>
-      <button class="btn-amber" onclick="selectOption('C')">Chọn C</button>
-      <button class="btn-red" onclick="selectOption('')">Bỏ chọn</button>
+    <button class="btn-purple" onclick="switchMode('question')" style="margin-bottom: 15px;">📺 Chuyển Sang Màn Hình Câu Hỏi</button>
+    
+    <div class="form-group">
+      <label>Hiển thị Câu Hỏi (Animation Wipe Up):</label>
+      <div class="btn-group">
+        <button class="btn-blue" onclick="toggleQuestion(true)">⬆️ Hiện Câu Hỏi (Wipe Up)</button>
+        <button class="btn-dark" onclick="toggleQuestion(false)">🙈 Ẩn Câu Hỏi</button>
+      </div>
     </div>
 
-    <br>
-    <label>Công bố kết quả:</label>
-    <div class="btn-group">
-      <button class="btn-green" onclick="revealCorrect()">✅ Công Bố Đáp Án Đúng (Xanh/Đỏ)</button>
-      <button class="btn-red" onclick="resetAll()">🔄 Reset Trạng Thái</button>
+    <div class="form-group">
+      <label>Hiển thị Từng Đáp Án (Animation Wipe Down):</label>
+      <div class="btn-group">
+        <button class="btn-blue" onclick="showAns('A')">⬇️ Hiện Đáp Án A</button>
+        <button class="btn-blue" onclick="showAns('B')">⬇️ Hiện Đáp Án B</button>
+        <button class="btn-blue" onclick="showAns('C')">⬇️ Hiện Đáp Án C</button>
+        <button class="btn-green" onclick="showAllAns()">✨ Hiện Cả 3 Đáp Án</button>
+        <button class="btn-dark" onclick="hideAllAns()">🙈 Ẩn Cả 3 Đáp Án</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Chốt Đáp Án Người Chơi (Đổi màu cam):</label>
+      <div class="btn-group">
+        <button class="btn-amber" onclick="selectOption('A')">Chốt A</button>
+        <button class="btn-amber" onclick="selectOption('B')">Chốt B</button>
+        <button class="btn-amber" onclick="selectOption('C')">Chốt C</button>
+        <button class="btn-dark" onclick="selectOption('')">Bỏ Chốt</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Công bố kết quả:</label>
+      <div class="btn-group">
+        <button class="btn-green" onclick="revealCorrect()">✅ Công Bố Đáp Án Đúng (Xanh/Đỏ)</button>
+        <button class="btn-red" onclick="resetQuestionState()">🔄 Reset Trạng Thái Câu Hỏi</button>
+      </div>
     </div>
   </div>
 
@@ -99,14 +144,23 @@
     const channel = new BroadcastChannel('dt100_channel');
 
     let state = {
+      mode: 'topics', // 'topics' hoặc 'question'
+      topic1: 'ÂM NHẠC',
+      topic2: 'PHIM ẢNH',
+      selectedTopic: null,
+
+      questionNum: 1,
       question: 'CÂU HỎI?',
       optionA: 'ĐÁP ÁN A',
       optionB: 'ĐÁP ÁN B',
       optionC: 'ĐÁP ÁN C',
       correctOption: 'A',
-      lifelines: '25%  50%  75%',
-      showQuestion: true,
-      showAnswers: true,
+
+      showQuestion: false,
+      showAnsA: false,
+      showAnsB: false,
+      showAnsC: false,
+
       selectedOption: '',
       revealed: false
     };
@@ -116,49 +170,93 @@
       channel.postMessage(state);
     }
 
+    function switchMode(modeName) {
+      state.mode = modeName;
+      sync();
+    }
+
+    function selectTopic(num) {
+      state.mode = 'topics';
+      state.selectedTopic = num;
+      sync();
+    }
+
+    function resetTopics() {
+      state.selectedTopic = null;
+      sync();
+    }
+
+    function updateQNum() {
+      state.questionNum = parseInt(document.getElementById('qNumInput').value) || 1;
+      sync();
+    }
+
     function sendData() {
+      state.topic1 = document.getElementById('topic1Input').value;
+      state.topic2 = document.getElementById('topic2Input').value;
+      state.questionNum = parseInt(document.getElementById('qNumInput').value) || 1;
       state.question = document.getElementById('qInput').value;
       state.optionA = document.getElementById('optA').value;
       state.optionB = document.getElementById('optB').value;
       state.optionC = document.getElementById('optC').value;
-      state.lifelines = document.getElementById('lifelinesInput').value;
-      
+
       const radios = document.getElementsByName('correctOpt');
       for (const r of radios) {
         if (r.checked) state.correctOption = r.value;
       }
 
-      state.selectedOption = '';
-      state.revealed = false;
       sync();
     }
 
-    function toggleQuestion() {
-      state.showQuestion = !state.showQuestion;
+    function toggleQuestion(show) {
+      state.mode = 'question';
+      state.showQuestion = show;
       sync();
     }
 
-    function toggleAnswers() {
-      state.showAnswers = !state.showAnswers;
+    function showAns(opt) {
+      state.mode = 'question';
+      if (opt === 'A') state.showAnsA = true;
+      if (opt === 'B') state.showAnsB = true;
+      if (opt === 'C') state.showAnsC = true;
+      sync();
+    }
+
+    function showAllAns() {
+      state.mode = 'question';
+      state.showAnsA = true;
+      state.showAnsB = true;
+      state.showAnsC = true;
+      sync();
+    }
+
+    function hideAllAns() {
+      state.showAnsA = false;
+      state.showAnsB = false;
+      state.showAnsC = false;
       sync();
     }
 
     function selectOption(opt) {
+      state.mode = 'question';
       state.selectedOption = opt;
       state.revealed = false;
       sync();
     }
 
     function revealCorrect() {
+      state.mode = 'question';
       state.revealed = true;
       sync();
     }
 
-    function resetAll() {
+    function resetQuestionState() {
+      state.showQuestion = false;
+      state.showAnsA = false;
+      state.showAnsB = false;
+      state.showAnsC = false;
       state.selectedOption = '';
       state.revealed = false;
-      state.showQuestion = true;
-      state.showAnswers = true;
       sync();
     }
 
