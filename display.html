@@ -38,7 +38,7 @@
             display: flex;
         }
 
-        /* 1. HIỂN THỊ CHỦ ĐỀ (MAX 2 CHỦ ĐỀ) */
+        /* 1. HIỂN THỊ CHỦ ĐỀ */
         .topics-wrapper {
             display: flex;
             gap: 60px;
@@ -78,13 +78,13 @@
             pointer-events: none;
         }
 
-        /* 2. CÂU HỎI VÀ TABS TRÊN (1 ĐẤU 100 & 25% 50% 75%) */
+        /* 2. KHUNG CÂU HỎI VÀ THẺ TIÊU ĐỀ */
         .qa-wrapper {
             width: 90%;
-            max-width: 1100px;
+            max-width: 1150px;
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 30px;
             position: relative;
         }
 
@@ -93,7 +93,6 @@
             margin-top: 35px;
         }
 
-        /* Tabs phía trên khung câu hỏi */
         .tab-left {
             position: absolute;
             top: -36px;
@@ -103,7 +102,7 @@
             border-bottom: none;
             border-top-left-radius: 12px;
             border-top-right-radius: 12px;
-            padding: 6px 22px;
+            padding: 6px 24px;
             font-size: 1.1rem;
             font-weight: bold;
             color: #e0aaff;
@@ -120,7 +119,7 @@
             border-bottom: none;
             border-top-left-radius: 12px;
             border-top-right-radius: 12px;
-            padding: 6px 22px;
+            padding: 6px 24px;
             font-size: 1.1rem;
             font-weight: bold;
             display: flex;
@@ -133,13 +132,11 @@
             transition: color 0.4s, opacity 0.4s;
         }
 
-        /* Bôi xám khi đã sử dụng trợ giúp */
         .lifeline-val.used {
             color: #4b5563 !important;
             opacity: 0.4;
         }
 
-        /* Question Box - Wipe Up Animation */
         .question-box {
             background: linear-gradient(135deg, #3b1859, #23103c);
             border: 3px solid #a855f7;
@@ -162,25 +159,27 @@
             animation: wipeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* LƯỚI TỐI ĐA 3 ĐÁP ÁN (A, B, C) */
+        /* 3. ĐÁP ÁN THEO GIAO DIỆN HÌNH ẢNH (3 CỘT, THẺ CHỮ NẰM Ở CHÍNH GIỮA MEP TRÊN) */
         .options-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
+            margin-top: 10px;
         }
 
         .option-card {
-            background: rgba(35, 16, 60, 0.9);
-            border: 2px solid #6b21a8;
+            position: relative;
+            background: linear-gradient(180deg, #2a1147 0%, #160829 100%);
+            border: 2px solid #581c87;
             border-radius: 16px;
-            padding: 22px 15px;
+            padding: 32px 20px 24px 20px;
             font-size: 1.5rem;
             font-weight: bold;
             display: none;
             align-items: center;
             justify-content: center;
             text-align: center;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
             transition: all 0.3s ease;
         }
 
@@ -194,37 +193,49 @@
             animation: wipeDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* Người chơi chọn (Màu cam/vàng) */
-        .option-card.player-selected {
-            background: linear-gradient(135deg, #d97706, #b45309) !important;
-            border-color: #f59e0b !important;
-            box-shadow: 0 0 30px #f59e0b;
-        }
-
-        /* Đáp án đúng (Màu xanh lá) */
-        .option-card.correct {
-            background: linear-gradient(135deg, #15803d, #166534) !important;
-            border-color: #22c55e !important;
-            box-shadow: 0 0 30px #22c55e;
-        }
-
+        /* Thẻ A, B, C nhô lên ở chính giữa mép trên khung */
         .option-prefix {
-            background: #6b21a8;
-            border-radius: 50%;
-            width: 38px;
-            height: 38px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            font-size: 1.2rem;
-            flex-shrink: 0;
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #581c87;
+            border: 1px solid #a855f7;
+            border-bottom: none;
+            color: #d8b4fe;
+            padding: 2px 22px;
+            border-radius: 12px 12px 0 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
         }
 
-        .option-card.player-selected .option-prefix { background: #b45309; }
-        .option-card.correct .option-prefix { background: #166534; }
+        /* Khi người chơi chọn (Màu cam/vàng) */
+        .option-card.player-selected {
+            background: linear-gradient(180deg, #b45309 0%, #78350f 100%) !important;
+            border-color: #f59e0b !important;
+            box-shadow: 0 0 35px #f59e0b;
+        }
+        .option-card.player-selected .option-prefix {
+            background: #f59e0b !important;
+            color: #000000 !important;
+            border-color: #fef08a !important;
+        }
 
-        /* 3. MÀN HÌNH BỊ LOẠI (CARD TÍM / ĐỎ) */
+        /* Khi hiển thị đáp án đúng (Màu xanh lá) */
+        .option-card.correct {
+            background: linear-gradient(180deg, #15803d 0%, #0f5127 100%) !important;
+            border-color: #22c55e !important;
+            box-shadow: 0 0 35px #22c55e;
+        }
+        .option-card.correct .option-prefix {
+            background: #22c55e !important;
+            color: #000000 !important;
+            border-color: #86efac !important;
+        }
+
+        /* 4. MÀN HÌNH BỊ LOẠI */
         .number-card {
             width: 80%;
             max-width: 850px;
@@ -255,13 +266,14 @@
         <div id="topics-wrapper" class="topics-wrapper"></div>
     </div>
 
-    <!-- MÀN HÌNH CÂU HỎI VÀ ĐÁP ÁN -->
+    <!-- MÀN HÌNH CÂU HỎI & ĐÁP ÁN -->
     <div id="screen-qa" class="screen-container">
         <div class="qa-wrapper">
             <div class="question-container">
-                <!-- Thẻ tiêu đề phía trên khung câu hỏi -->
                 <div class="tab-left">1 ĐẤU 100</div>
-                <div class="tab-right">
+                
+                <!-- Ẩn trợ giúp ở câu đầu tiên -->
+                <div id="tab-right-lifelines" class="tab-right">
                     <span id="ll-25" class="lifeline-val">25%</span>
                     <span id="ll-50" class="lifeline-val">50%</span>
                     <span id="ll-75" class="lifeline-val">75%</span>
@@ -270,11 +282,20 @@
                 <div id="question-box" class="question-box"></div>
             </div>
 
-            <!-- Tối đa 3 đáp án (A, B, C) -->
+            <!-- Khung đáp án 3 cột -->
             <div class="options-grid">
-                <div id="opt-A" class="option-card"><span class="option-prefix">A</span><span class="opt-text"></span></div>
-                <div id="opt-B" class="option-card"><span class="option-prefix">B</span><span class="opt-text"></span></div>
-                <div id="opt-C" class="option-card"><span class="option-prefix">C</span><span class="opt-text"></span></div>
+                <div id="opt-A" class="option-card">
+                    <span class="option-prefix">A</span>
+                    <span class="opt-text"></span>
+                </div>
+                <div id="opt-B" class="option-card">
+                    <span class="option-prefix">B</span>
+                    <span class="opt-text"></span>
+                </div>
+                <div id="opt-C" class="option-card">
+                    <span class="option-prefix">C</span>
+                    <span class="opt-text"></span>
+                </div>
             </div>
         </div>
     </div>
@@ -298,7 +319,7 @@
         channel.onmessage = function(event) {
             const data = event.data;
 
-            // CHỦ ĐỀ
+            // 1. CHỦ ĐỀ
             if (data.action === 'SHOW_TOPICS') {
                 setScreen('screen-topics');
                 const wrapper = document.getElementById('topics-wrapper');
@@ -324,7 +345,7 @@
                 });
             }
 
-            // BÔI XÁM QUYỀN TRỢ GIÚP (25%, 50%, 75%)
+            // 2. TRỢ GIÚP (BÔI XÁM)
             else if (data.action === 'UPDATE_LIFELINES') {
                 ['25', '50', '75'].forEach(val => {
                     const el = document.getElementById(`ll-${val}`);
@@ -336,9 +357,14 @@
                 });
             }
 
-            // NẠP CÂU HỎI
+            // 3. CÂU HỎI & ĐÁP ÁN
             else if (data.action === 'LOAD_QUESTION') {
                 setScreen('screen-qa');
+
+                // Ẩn hoàn toàn khung trợ giúp ở câu đầu tiên
+                const lifelineTab = document.getElementById('tab-right-lifelines');
+                lifelineTab.style.display = data.isFirstQuestion ? 'none' : 'flex';
+
                 const qBox = document.getElementById('question-box');
                 qBox.classList.remove('wipe-up');
                 qBox.innerText = data.questionData.question;
@@ -365,8 +391,6 @@
                     opt.classList.add('wipe-down');
                 }
             }
-
-            // NGƯỜI CHƠI CHỌN ĐÁP ÁN
             else if (data.action === 'SELECT_PLAYER_ANSWER') {
                 ['A', 'B', 'C'].forEach(key => {
                     document.getElementById(`opt-${key}`).classList.remove('player-selected');
@@ -374,14 +398,12 @@
                 const opt = document.getElementById(`opt-${data.key}`);
                 if (opt) opt.classList.add('player-selected');
             }
-
-            // HIỂN THỊ ĐÁP ÁN ĐÚNG
             else if (data.action === 'SHOW_CORRECT_ANSWER') {
                 const opt = document.getElementById(`opt-${data.correctKey}`);
                 if (opt) opt.classList.add('correct');
             }
 
-            // BƯỚC 1: HIỂN THỊ MÀN HÌNH ĐẾM (CARD TÍM SỐ 0)
+            // 4. MÀN HÌNH ĐẾM SỐ NGƯỜI SAI
             else if (data.action === 'PREPARE_ELIMINATION') {
                 setScreen('screen-elimination');
                 pendingEliminatedCount = data.count;
@@ -389,8 +411,6 @@
                 card.className = 'number-card purple';
                 document.getElementById('eliminated-count-text').innerText = '0';
             }
-
-            // BƯỚC 2: LỘ DIỆN SỐ NGƯỜI SAI (CARD ĐỎ + NHẢY SỐ)
             else if (data.action === 'REVEAL_ELIMINATION') {
                 setScreen('screen-elimination');
                 const card = document.getElementById('number-card');
@@ -409,7 +429,7 @@
                     if (current < target) {
                         current++;
                         countText.innerText = current;
-                        const randomInterval = Math.floor(Math.random() * 500) + 100;
+                        const randomInterval = Math.floor(Math.random() * 450) + 80;
                         setTimeout(step, randomInterval);
                     }
                 }
