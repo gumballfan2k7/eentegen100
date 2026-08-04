@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đấu Trường 100 - Display</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #2e0854 0%, #0d021a 85%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .game-container {
+      width: 100%;
+      max-width: 960px;
+    }
+
+    /* Tabs phía trên */
+    .header-tabs {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 0 20px;
+      margin-bottom: -2px;
+    }
+
+    .tab-left {
+      background: #200a38;
+      padding: 8px 30px;
+      border-radius: 12px 12px 0 0;
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+      color: #dfc5fe;
+      box-shadow: 0 -4px 10px rgba(0,0,0,0.5);
+    }
+
+    .tab-right {
+      background: #200a38;
+      padding: 8px 25px;
+      border-radius: 12px 12px 0 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #27ae60;
+      letter-spacing: 12px;
+      box-shadow: 0 -4px 10px rgba(0,0,0,0.5);
+    }
+
+    /* Khung Câu Hỏi */
+    .question-card {
+      background: linear-gradient(180deg, #240b3f 0%, #1a0630 100%);
+      border: 1px solid #4a1980;
+      border-radius: 16px;
+      padding: 45px 30px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      position: relative;
+      z-index: 2;
+      min-height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease;
+    }
+
+    .question-text {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    }
+
+    /* Lưới Đáp Án */
+    .answers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 15px;
+      position: relative;
+      transition: opacity 0.3s ease;
+    }
+
+    .answer-wrapper {
+      position: relative;
+      padding-top: 14px;
+    }
+
+    .badge {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #391163;
+      border: 1px solid #6326a6;
+      color: #c8a2ff;
+      font-weight: bold;
+      padding: 2px 18px;
+      border-radius: 12px;
+      font-size: 1rem;
+      z-index: 3;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+    }
+
+    .answer-card {
+      background: linear-gradient(180deg, #240b3f 0%, #1a0630 100%);
+      border: 1px solid #4a1980;
+      border-radius: 14px;
+      padding: 25px 15px;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-transform: uppercase;
+      min-height: 85px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+
+    /* Các Trạng Thái Đáp Án */
+    .answer-card.selected {
+      background: linear-gradient(180deg, #d35400 0%, #a04000 100%);
+      border-color: #f39c12;
+      box-shadow: 0 0 25px rgba(243, 156, 18, 0.8);
+      transform: scale(1.02);
+    }
+
+    .answer-card.correct {
+      background: linear-gradient(180deg, #1e8449 0%, #145a32 100%);
+      border-color: #2ecc71;
+      box-shadow: 0 0 30px rgba(46, 204, 113, 0.9);
+      animation: pulse 1s infinite alternate;
+    }
+
+    .answer-card.wrong {
+      background: linear-gradient(180deg, #7b241c 0%, #4a1511 100%);
+      border-color: #e74c3c;
+      opacity: 0.4;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 15px rgba(46, 204, 113, 0.6); }
+      100% { box-shadow: 0 0 35px rgba(46, 204, 113, 1); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-container">
+    <div class="header-tabs">
+      <div class="tab-left">1 ĐẤU 100</div>
+      <div class="tab-right" id="lifelines">25% 50% 75%</div>
+    </div>
+    
+    <div class="question-card" id="qCard">
+      <div class="question-text" id="questionBox">CÂU HỎI?</div>
+    </div>
+
+    <div class="answers-grid" id="ansGrid">
+      <div class="answer-wrapper">
+        <div class="badge">A</div>
+        <div class="answer-card" id="ansA">ĐÁP ÁN A</div>
+      </div>
+      <div class="answer-wrapper">
+        <div class="badge">B</div>
+        <div class="answer-card" id="ansB">ĐÁP ÁN B</div>
+      </div>
+      <div class="answer-wrapper">
+        <div class="badge">C</div>
+        <div class="answer-card" id="ansC">ĐÁP ÁN C</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const channel = new BroadcastChannel('dt100_channel');
+
+    function updateDisplay(data) {
+      if (!data) return;
+      
+      const qBox = document.getElementById('questionBox');
+      const qCard = document.getElementById('qCard');
+      const ansGrid = document.getElementById('ansGrid');
+      const ansA = document.getElementById('ansA');
+      const ansB = document.getElementById('ansB');
+      const ansC = document.getElementById('ansC');
+      const lifelines = document.getElementById('lifelines');
+
+      if (data.question !== undefined) qBox.innerText = data.question;
+      if (data.optionA !== undefined) ansA.innerText = data.optionA;
+      if (data.optionB !== undefined) ansB.innerText = data.optionB;
+      if (data.optionC !== undefined) ansC.innerText = data.optionC;
+      if (data.lifelines !== undefined) lifelines.innerText = data.lifelines;
+
+      // Ẩn / Hiện
+      qCard.style.opacity = data.showQuestion ? '1' : '0';
+      ansGrid.style.opacity = data.showAnswers ? '1' : '0';
+
+      // Reset hiệu ứng
+      [ansA, ansB, ansC].forEach(el => el.className = 'answer-card');
+
+      // Đánh dấu đáp án được chọn (Chờ chốt)
+      if (data.selectedOption) {
+        const selEl = document.getElementById('ans' + data.selectedOption);
+        if (selEl) selEl.classList.add('selected');
+      }
+
+      // Hiện đáp án Đúng / Sai
+      if (data.revealed && data.correctOption) {
+        ['A', 'B', 'C'].forEach(opt => {
+          const el = document.getElementById('ans' + opt);
+          if (opt === data.correctOption) {
+            el.classList.remove('selected');
+            el.classList.add('correct');
+          } else {
+            el.classList.remove('selected');
+            el.classList.add('wrong');
+          }
+        });
+      }
+    }
+
+    channel.onmessage = (event) => updateDisplay(event.data);
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'dt100_state') updateDisplay(JSON.parse(e.newValue));
+    });
+
+    // Khởi tạo trạng thái ban đầu
+    const saved = localStorage.getItem('dt100_state');
+    if (saved) updateDisplay(JSON.parse(saved));
+  </script>
+</body>
+</html>
