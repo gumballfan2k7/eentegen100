@@ -138,7 +138,7 @@
 
         <!-- 3. TRÌNH CHIẾU CÂU HỎI & CHỌN ĐÁP ÁN -->
         <div class="panel-box" style="grid-column: span 2;">
-            <div class="panel-title">3. Trình Chiếu Câu Hỏi & Ghi Nhận Lựa Chọn NgườI Chơi</div>
+            <div class="panel-title">3. Trình Chiếu Câu Hỏi & Ghi Nhận Lựa Chọn Người Chơi</div>
             
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
                 <div><b>Lượt thi hiện tại:</b> <span id="current-q-index" style="color:#c084fc; font-size:1.2rem;">Lượt 1 (Câu 1)</span></div>
@@ -163,7 +163,7 @@
                 <button class="btn btn-warning" onclick="selectPlayerAnswer('A')">👤 Người Chơi Chọn A</button>
                 <button class="btn btn-warning" onclick="selectPlayerAnswer('B')">👤 Người Chơi Chọn B</button>
                 <button class="btn btn-warning" onclick="selectPlayerAnswer('C')">👤 Người Chơi Chọn C</button>
-                <button class="btn btn-danger" style="margin-left: auto;" onclick="sendCorrectAnswer()">✅ Hiển Thị Đáp Án Đúng</button>
+                <button class="btn btn-danger" style="margin-left: auto;" onclick="sendCorrectAnswer()">✅ Hiển Thị Đáp Án Đúng (Đỏ/Xanh)</button>
             </div>
         </div>
 
@@ -182,13 +182,13 @@
 
         <!-- 5. MÀN HÌNH BỊ LOẠI -->
         <div class="panel-box">
-            <div class="panel-title">5. Màn Hình Số Người Bị Loại (2 Bước)</div>
+            <div class="panel-title">5. Màn Hình Số Người Bị Loại & Cập Nhật "1 ĐẤU X"</div>
             <div style="display: flex; flex-direction: column; gap: 8px;">
                 <button class="btn btn-secondary" style="padding: 10px;" onclick="prepareElimination()">
                     📺 1. Mở Màn Hình Đếm (Thẻ Tím - Số 0)
                 </button>
                 <button class="btn btn-danger" style="padding: 10px;" onclick="revealElimination()">
-                    🚨 2. Lộ Diện Số Người Sai (Thẻ Đỏ - Nhảy Số)
+                    🚨 2. Lộ Diện Số Người Sai (Cập nhật 1 ĐẤU X mới)
                 </button>
             </div>
             <div id="player-stats" class="stats-info"></div>
@@ -203,7 +203,6 @@
         let selectedTopic = null;
         let activeQuestion = null;
 
-        // Cấu trúc dữ liệu câu hỏi: Mỗi lượt (round) có các chủ đề khác nhau
         let questionsDatabase = [
             {
                 round: 1,
@@ -245,7 +244,6 @@
             updateRoundUI();
         };
 
-        // LẤY CHỦ ĐỀ CÓ SẴN Ở LƯỢT HIỆN TẠI
         function getAvailableTopicsForRound(round) {
             const roundQuestions = questionsDatabase.filter(q => q.round === round);
             return [...new Set(roundQuestions.map(q => q.topic))].slice(0, 2);
@@ -260,7 +258,6 @@
 
             renderTopicControls();
 
-            // Khóa/Mở các nút trợ giúp
             const isFirstQuestion = (currentRound === 1);
             document.getElementById('lifeline-warning').style.display = isFirstQuestion ? 'block' : 'none';
 
@@ -289,14 +286,10 @@
             channel.postMessage({ action: 'SHOW_TOPICS', topics: topics });
         }
 
-        // KHI CHỌN NÚT CHỦ ĐỀ -> NẠP CÂU HỎI THUỘC CHỦ ĐỀ ĐÓ
         function selectTopic(topicName) {
             selectedTopic = topicName;
-
-            // Gửi hiệu ứng chọn chủ đề tới Display Stage
             channel.postMessage({ action: 'SELECT_TOPIC', topicName: topicName });
 
-            // Tìm câu hỏi tương ứng với lượt + chủ đề
             activeQuestion = questionsDatabase.find(q => q.round === currentRound && q.topic === topicName);
 
             if (activeQuestion) {
@@ -307,7 +300,6 @@
                     <b style="color:#22c55e;">Đáp án đúng: ${activeQuestion.correct}</b>
                 `;
 
-                // Nạp câu hỏi sang Display Stage
                 channel.postMessage({ 
                     action: 'LOAD_QUESTION', 
                     questionData: activeQuestion,
@@ -357,7 +349,6 @@
             channel.postMessage({ action: 'UPDATE_LIFELINES', used: lifelineState });
         }
 
-        // MÀN HÌNH ĐẾM SỐ NGƯỜI BỊ LOẠI (2 BƯỚC)
         function prepareElimination() {
             calculateRoundElimination();
             channel.postMessage({ action: 'PREPARE_ELIMINATION', count: lastCalculatedEliminated });
@@ -365,6 +356,8 @@
 
         function revealElimination() {
             channel.postMessage({ action: 'REVEAL_ELIMINATION' });
+            // Cập nhật số người còn lại lên Display Stage
+            broadcastPlayerCount();
         }
 
         function calculateRoundElimination() {
@@ -393,7 +386,11 @@
             updatePlayerStatsUI();
         }
 
-        // EXCEL IMPORT & SAMPLE EXCEL
+        function broadcastPlayerCount() {
+            const activeCount = players.filter(p => p.status === 'active').length;
+            channel.postMessage({ action: 'UPDATE_PLAYER_COUNT', activeCount: activeCount });
+        }
+
         function downloadSampleExcel() {
             const data = [
                 ["Lượt/Mức", "Chủ đề", "Câu hỏi", "Đáp án A", "Đáp án B", "Đáp án C", "Đáp án đúng"],
@@ -439,7 +436,6 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // MÔ PHỎNG NGƯỜI CHƠI
         function initPlayers() {
             players = [];
             const topIQ = Math.floor(Math.random() * (195 - 170 + 1)) + 170;
@@ -450,6 +446,7 @@
             }
             totalEliminated = 0;
             updatePlayerStatsUI();
+            setTimeout(broadcastPlayerCount, 500);
         }
 
         function updatePlayerStatsUI() {
