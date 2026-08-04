@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Màn hình hiển thị - Đấu trường 100</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient-1: #351a66;
+            --bg-gradient-2: #160731;
+            --card-bg: #2b133b;
+            --text-color: #f1e4ff;
+            --tab-color: #896d9c;
+            --green-text: #2c4c2d;
+            --badge-bg: #4a2e5d;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: radial-gradient(circle at center, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 100%);
+            font-family: 'Roboto Condensed', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        .game-container {
+            width: 1000px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Phần Tabs phía trên */
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: -1px; /* Để liền mạch với khung dưới */
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab {
+            background: var(--card-bg);
+            padding: 10px 25px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .tab.left {
+            border-radius: 12px 12px 0 0;
+            color: var(--tab-color);
+            margin-left: 50px;
+        }
+
+        .tab.right {
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            gap: 20px;
+            margin-right: 50px;
+        }
+
+        .tab.right span {
+            color: var(--green-text);
+            font-weight: 700;
+        }
+
+        /* Phần Câu hỏi */
+        .question-box {
+            background: var(--card-bg);
+            border-radius: 12px;
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 28px;
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 2;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Phần Đáp án */
+        .answers-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .answer-box {
+            background: var(--card-bg);
+            flex: 1;
+            border-radius: 12px;
+            position: relative;
+            text-align: center;
+            padding: 25px 10px;
+            font-size: 24px;
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+        }
+
+        /* Hình tròn A, B, C đè lên viền */
+        .badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--badge-bg);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--tab-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab left">1 ĐẤU 100</div>
+            <div class="tab right">
+                <span>25%</span>
+                <span>50%</span>
+                <span>75%</span>
+            </div>
+        </div>
+
+        <!-- Question -->
+        <div class="question-box" id="disp-question">
+            CÂU HỎI?
+        </div>
+
+        <!-- Answers -->
+        <div class="answers-container">
+            <div class="answer-box">
+                <div class="badge">A</div>
+                <span id="disp-ans-a">ĐÁP ÁN A</span>
+            </div>
+            <div class="answer-box">
+                <div class="badge">B</div>
+                <span id="disp-ans-b">ĐÁP ÁN B</span>
+            </div>
+            <div class="answer-box">
+                <div class="badge">C</div>
+                <span id="disp-ans-c">ĐÁP ÁN C</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cập nhật giao diện từ dữ liệu
+        function updateUI(data) {
+            if (!data) return;
+            document.getElementById('disp-question').innerText = data.question || "CÂU HỎI?";
+            document.getElementById('disp-ans-a').innerText = data.ansA || "ĐÁP ÁN A";
+            document.getElementById('disp-ans-b').innerText = data.ansB || "ĐÁP ÁN B";
+            document.getElementById('disp-ans-c').innerText = data.ansC || "ĐÁP ÁN C";
+        }
+
+        // Lắng nghe sự kiện thay đổi từ Controller (khi mở ở 2 tab khác nhau)
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'dt100_data') {
+                updateUI(JSON.parse(event.newValue));
+            }
+        });
+
+        // Khởi tạo lần đầu nếu đã có dữ liệu
+        const initialData = JSON.parse(localStorage.getItem('dt100_data'));
+        if(initialData) updateUI(initialData);
+    </script>
+</body>
+</html>
