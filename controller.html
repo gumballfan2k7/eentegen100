@@ -2,187 +2,167 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Game Controller</title>
-  <!-- Thư viện đọc File Excel -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đấu Trường 100 - Controller</title>
   <style>
-    /* CSS Animation cho Chủ đề */
-    @keyframes wipeDownCenter {
-      0% {
-        transform: translateY(-100%);
-        opacity: 0;
-        clip-path: inset(0 0 100% 0);
-      }
-      100% {
-        transform: translateY(0);
-        opacity: 1;
-        clip-path: inset(0 0 0 0);
-      }
-    }
-
-    @keyframes zoomOut {
-      0% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(0);
-        opacity: 0;
-      }
-    }
-
-    .topic-card.selected {
-      animation: wipeDownCenter 0.8s ease-in-out forwards;
-      margin: 0 auto;
-    }
-
-    .topic-card.unselected {
-      animation: zoomOut 0.6s ease-in-out forwards;
-    }
-
-    /* Ẩn bảng 100 người chơi */
-    #player-board-100 {
-      display: none !important;
-    }
-
-    /* Khung câu hỏi & nút bấm */
-    .question-box {
-      transition: opacity 0.5s ease, transform 0.5s ease;
-    }
-    .question-box.hidden {
-      opacity: 0;
-      pointer-events: none;
-      transform: scale(0.95);
-    }
-
-    .btn-help:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+    body { background: #12122b; color: #fff; padding: 20px; max-width: 850px; margin: 0 auto; }
+    h1 { text-align: center; color: #a855f7; margin-bottom: 20px; }
+    .panel { background: #1e1e3e; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #3b3b6d; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 6px; font-weight: bold; color: #c084fc; }
+    input[type="text"], textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #4c4c85; background: #0c0c1e; color: #fff; font-size: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+    button { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: 0.2s; }
+    .btn-purple { background: #8b5cf6; color: white; }
+    .btn-blue { background: #0ea5e9; color: white; }
+    .btn-amber { background: #f59e0b; color: white; }
+    .btn-green { background: #10b981; color: white; }
+    .btn-red { background: #ef4444; color: white; }
+    button:hover { opacity: 0.85; transform: translateY(-1px); }
+    .radio-group { display: flex; gap: 20px; margin-top: 5px; background: #0c0c1e; padding: 10px; border-radius: 6px; }
+    .radio-group label { color: white; margin: 0; cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <!-- KHU VỰC NHẬP ĐỀ EXCEL -->
-  <div class="control-panel">
-    <button onclick="document.getElementById('excel-file').click()">📂 Nhập đề từ Excel</button>
-    <input type="file" id="excel-file" accept=".xlsx, .xls" style="display: none;">
-    <span id="file-status">Chưa chọn file</span>
+  <h1>BẢNG ĐIỀU KHIỂN ĐẤU TRƯỜNG 100</h1>
+
+  <div class="panel">
+    <h3>1. Nhập Nội Dung Câu Hỏi & Đáp Án</h3>
+    <br>
+    <div class="form-group">
+      <label>Nội dung câu hỏi:</label>
+      <textarea id="qInput" rows="2">CÂU HỎI?</textarea>
+    </div>
+
+    <div class="grid-3">
+      <div class="form-group">
+        <label>Đáp án A:</label>
+        <input type="text" id="optA" value="ĐÁP ÁN A">
+      </div>
+      <div class="form-group">
+        <label>Đáp án B:</label>
+        <input type="text" id="optB" value="ĐÁP ÁN B">
+      </div>
+      <div class="form-group">
+        <label>Đáp án C:</label>
+        <input type="text" id="optC" value="ĐÁP ÁN C">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Đáp án Đúng là:</label>
+      <div class="radio-group">
+        <label><input type="radio" name="correctOpt" value="A" checked> A</label>
+        <label><input type="radio" name="correctOpt" value="B"> B</label>
+        <label><input type="radio" name="correctOpt" value="C"> C</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Text trợ giúp (Góc trên phải):</label>
+      <input type="text" id="lifelinesInput" value="25%  50%  75%">
+    </div>
+
+    <button class="btn-purple" onclick="sendData()">💾 Cập Nhật Sang Màn Hình Display</button>
   </div>
 
-  <hr>
-
-  <!-- KHU VỰC QUYỀN TRỢ GIÚP (Chỉ hoạt động từ câu 2) -->
-  <div class="lifelines">
-    <h3>Quyền trợ giúp:</h3>
-    <button class="btn-help" id="help-5050" disabled onclick="useHelp('5050')">50:50</button>
-    <button class="btn-help" id="help-audience" disabled onclick="useHelp('audience')">Hỏi ý kiến</button>
-  </div>
-
-  <hr>
-
-  <!-- KHU VỰC CHỌN CHỦ ĐỀ -->
-  <div id="topics-container" style="display: flex; gap: 20px; justify-content: center;">
-    <div class="topic-card" id="topic-1" onclick="selectTopic(1)">Chủ đề 1</div>
-    <div class="topic-card" id="topic-2" onclick="selectTopic(2)">Chủ đề 2</div>
-    <div class="topic-card" id="topic-3" onclick="selectTopic(3)">Chủ đề 3</div>
-  </div>
-
-  <hr>
-
-  <!-- KHU VỰC CÂU HỎI & 3 ĐÁP ÁN -->
-  <div id="question-container" class="question-box hidden">
-    <h2 id="question-title">Nội dung câu hỏi...</h2>
+  <div class="panel">
+    <h3>2. Điều Khiển Hiệu Ứng Trình Chiếu</h3>
+    <br>
+    <label>Ẩn / Hiện yếu tố:</label>
+    <div class="btn-group">
+      <button class="btn-blue" onclick="toggleQuestion()">👁️ Ẩn/Hiện Câu Hỏi</button>
+      <button class="btn-blue" onclick="toggleAnswers()">🔘 Ẩn/Hiện 3 Đáp Án</button>
+    </div>
     
-    <div class="answers-group" style="display: flex; flex-direction: column; gap: 10px;">
-      <button class="btn-answer" id="btn-ans-a" onclick="submitAnswer('A')">A. Đáp án 1</button>
-      <button class="btn-answer" id="btn-ans-b" onclick="submitAnswer('B')">B. Đáp án 2</button>
-      <button class="btn-answer" id="btn-ans-c" onclick="submitAnswer('C')">C. Đáp án 3</button>
+    <br>
+    <label>Chọn đáp án người chơi chốt (Đổi màu cam):</label>
+    <div class="btn-group">
+      <button class="btn-amber" onclick="selectOption('A')">Chọn A</button>
+      <button class="btn-amber" onclick="selectOption('B')">Chọn B</button>
+      <button class="btn-amber" onclick="selectOption('C')">Chọn C</button>
+      <button class="btn-red" onclick="selectOption('')">Bỏ chọn</button>
+    </div>
+
+    <br>
+    <label>Công bố kết quả:</label>
+    <div class="btn-group">
+      <button class="btn-green" onclick="revealCorrect()">✅ Công Bố Đáp Án Đúng (Xanh/Đỏ)</button>
+      <button class="btn-red" onclick="resetAll()">🔄 Reset Trạng Thái</button>
     </div>
   </div>
 
   <script>
-    let questionsData = [];
-    let currentQuestionIndex = 0;
+    const channel = new BroadcastChannel('dt100_channel');
 
-    // 1. Xử lý Nhập File Excel
-    document.getElementById('excel-file').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (!file) return;
+    let state = {
+      question: 'CÂU HỎI?',
+      optionA: 'ĐÁP ÁN A',
+      optionB: 'ĐÁP ÁN B',
+      optionC: 'ĐÁP ÁN C',
+      correctOption: 'A',
+      lifelines: '25%  50%  75%',
+      showQuestion: true,
+      showAnswers: true,
+      selectedOption: '',
+      revealed: false
+    };
 
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const data = new Uint8Array(evt.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-        
-        // Chuyển dữ liệu Excel thành mảng Object
-        questionsData = XLSX.utils.sheet_to_json(firstSheet);
-        
-        document.getElementById('file-status').innerText = `Đã tải ${questionsData.length} câu hỏi!`;
-        currentQuestionIndex = 0;
-        loadQuestion(currentQuestionIndex);
-      };
-      reader.readAsArrayBuffer(file);
-    });
+    function sync() {
+      localStorage.setItem('dt100_state', JSON.stringify(state));
+      channel.postMessage(state);
+    }
 
-    // 2. Load Câu hỏi & Cập nhật Trạng thái Trợ giúp
-    function loadQuestion(index) {
-      if (index >= questionsData.length) {
-        alert("Đã hoàn thành toàn bộ câu hỏi!");
-        return;
+    function sendData() {
+      state.question = document.getElementById('qInput').value;
+      state.optionA = document.getElementById('optA').value;
+      state.optionB = document.getElementById('optB').value;
+      state.optionC = document.getElementById('optC').value;
+      state.lifelines = document.getElementById('lifelinesInput').value;
+      
+      const radios = document.getElementsByName('correctOpt');
+      for (const r of radios) {
+        if (r.checked) state.correctOption = r.value;
       }
 
-      const q = questionsData[index];
-      document.getElementById('question-title').innerText = `Câu ${index + 1}: ${q.CauHoi}`;
-      document.getElementById('btn-ans-a').innerText = `A. ${q.DapAnA}`;
-      document.getElementById('btn-ans-b').innerText = `B. ${q.DapAnB}`;
-      document.getElementById('btn-ans-c').innerText = `C. ${q.DapAnC}`;
-
-      // Hiển thị khung câu hỏi
-      document.getElementById('question-container').classList.remove('hidden');
-
-      // Cập nhật Quyền trợ giúp: Khóa ở câu 1 (index 0), Mở từ câu 2 (index >= 1)
-      const helpButtons = document.querySelectorAll('.btn-help');
-      helpButtons.forEach(btn => {
-        btn.disabled = (index === 0);
-      });
+      state.selectedOption = '';
+      state.revealed = false;
+      sync();
     }
 
-    // 3. Xử lý sau khi hoàn thành mỗi câu hỏi (Ẩn đi)
-    function submitAnswer(selectedOption) {
-      const qContainer = document.getElementById('question-container');
-      
-      // Ẩn màn hình câu hỏi hiện tại
-      qContainer.classList.add('hidden');
-
-      // Chờ animation ẩn xong thì tăng index và chuẩn bị cho câu tiếp theo
-      setTimeout(() => {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < questionsData.length) {
-          loadQuestion(currentQuestionIndex);
-        }
-      }, 600);
+    function toggleQuestion() {
+      state.showQuestion = !state.showQuestion;
+      sync();
     }
 
-    // 4. Animation Chọn chủ đề
-    function selectTopic(selectedId) {
-      const topics = document.querySelectorAll('.topic-card');
-      topics.forEach((topic, idx) => {
-        if (idx + 1 === selectedId) {
-          topic.classList.remove('unselected');
-          topic.classList.add('selected');
-        } else {
-          topic.classList.remove('selected');
-          topic.classList.add('unselected');
-        }
-      });
+    function toggleAnswers() {
+      state.showAnswers = !state.showAnswers;
+      sync();
     }
 
-    function useHelp(type) {
-      alert(`Đã sử dụng quyền trợ giúp: ${type}`);
+    function selectOption(opt) {
+      state.selectedOption = opt;
+      state.revealed = false;
+      sync();
     }
+
+    function revealCorrect() {
+      state.revealed = true;
+      sync();
+    }
+
+    function resetAll() {
+      state.selectedOption = '';
+      state.revealed = false;
+      state.showQuestion = true;
+      state.showAnswers = true;
+      sync();
+    }
+
+    sync();
   </script>
 </body>
 </html>
