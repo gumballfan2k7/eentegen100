@@ -131,8 +131,8 @@
 
         <!-- 2. ĐIỀU KHIỂN CHỦ ĐỀ -->
         <div class="panel-box">
-            <div class="panel-title">2. Lựa Chọn Chủ Đề (Peek Up -> Move To Center)</div>
-            <button class="btn btn-purple" onclick="sendShowTopics()">📺 Hiển Thị Chủ Đề (Peek Up)</button>
+            <div class="panel-title">2. Lựa Chọn Chủ Đề (Dọc Theo Video)</div>
+            <button class="btn btn-purple" onclick="sendShowTopics()">📺 Hiển Thị 2 Chủ Đề (Dọc)</button>
             <div id="topic-actions" style="margin-top: 10px;"></div>
         </div>
 
@@ -228,16 +228,16 @@
         let isLifelineTabVisible = false;
 
         let questionsDatabase = [
-            { round: 1, topic: "Toán Học", question: "Câu 1 (Toán): Số tự nhiên nhỏ nhất là số nào?", options: { A: "0", B: "1", C: "Không có" }, correct: "A" },
-            { round: 1, topic: "Khoa Học", question: "Câu 1 (Khoa học): Nước sôi ở bao nhiêu độ C ở điều kiện tiêu chuẩn?", options: { A: "80°C", B: "90°C", C: "100°C" }, correct: "C" },
-            { round: 2, topic: "Lịch Sử", question: "Câu 2 (Lịch sử): Chiến thắng Điện Biên Phủ diễn ra vào năm nào?", options: { A: "1945", B: "1954", C: "1975" }, correct: "B" },
-            { round: 2, topic: "Văn Học", question: "Câu 2 (Văn học): Tác giả của tác phẩm 'Truyện Kiều' là ai?", options: { A: "Nguyễn Du", B: "Tố Hữu", C: "Xuân Diệu" }, correct: "A" },
-            { round: 3, topic: "Địa Lý", question: "Câu 3 (Địa lý): Quốc gia nào có diện tích lớn nhất thế giới?", options: { A: "Trung Quốc", B: "Mỹ", C: "Nga" }, correct: "C" },
-            { round: 3, topic: "Âm Nhạc", question: "Câu 3 (Âm nhạc): Nhạc sĩ nào là tác giả của ca khúc 'Tiến Quân Ca'?", options: { A: "Văn Cao", B: "Trịnh Công Sơn", C: "Phạm Tuyên" }, correct: "A" },
+            { round: 1, topic: "Âm Nhạc", question: "Câu 1 (Âm Nhạc): Ca khúc nào được xem là Quốc ca của Việt Nam?", options: { A: "Tiến Quân Ca", B: "Giai Điệu Tự Hào", C: "Khát Vọng" }, correct: "A" },
+            { round: 1, topic: "Phim Ảnh", question: "Câu 1 (Phim Ảnh): Phim hoạt hình Việt Nam 'Dế Mèn Phiêu Lưu Ký' dựa trên tác phẩm của ai?", options: { A: "Nam Cao", B: "Tô Hoài", C: "Xuân Diệu" }, correct: "B" },
+            { round: 2, topic: "Toán Học", question: "Câu 2 (Toán): Số tự nhiên nhỏ nhất là số nào?", options: { A: "0", B: "1", C: "Không có" }, correct: "A" },
+            { round: 2, topic: "Khoa Học", question: "Câu 2 (Khoa học): Nước sôi ở bao nhiêu độ C ở điều kiện tiêu chuẩn?", options: { A: "80°C", B: "90°C", C: "100°C" }, correct: "C" },
+            { round: 3, topic: "Lịch Sử", question: "Câu 3 (Lịch sử): Chiến thắng Điện Biên Phủ diễn ra vào năm nào?", options: { A: "1945", B: "1954", C: "1975" }, correct: "B" },
+            { round: 3, topic: "Văn Học", question: "Câu 3 (Văn học): Tác giả của tác phẩm 'Truyện Kiều' là ai?", options: { A: "Nguyễn Du", B: "Tố Hữu", C: "Xuân Diệu" }, correct: "A" },
+            { round: 4, topic: "Địa Lý", question: "Câu 4 (Địa lý): Quốc gia nào có diện tích lớn nhất thế giới?", options: { A: "Trung Quốc", B: "Mỹ", C: "Nga" }, correct: "C" },
             { round: 4, topic: "Thể Thao", question: "Câu 4 (Thể thao): Một trận đấu bóng đá chính thức gồm bao nhiêu phút thi đấu chính thức?", options: { A: "80 phút", B: "90 phút", C: "100 phút" }, correct: "B" },
-            { round: 4, topic: "Sinh Học", question: "Câu 4 (Sinh học): Loài động vật có vú nào biết bay?", options: { A: "Sóc bay", B: "Chim cánh cụt", C: "Dơi" }, correct: "C" },
+            { round: 5, topic: "Sinh Học", question: "Câu 5 (Sinh học): Loài động vật có vú nào biết bay?", options: { A: "Sóc bay", B: "Chim cánh cụt", C: "Dơi" }, correct: "C" },
             { round: 5, topic: "Công Nghệ", question: "Câu 5 (Công nghệ): Hệ điều hành Android do công ty nào phát triển chính?", options: { A: "Apple", B: "Google", C: "Microsoft" }, correct: "B" },
-            { round: 5, topic: "Tiếng Anh", question: "Câu 5 (Tiếng Anh): Từ nào sau đây có nghĩa là 'Trái đất'?", options: { A: "Earth", B: "Moon", C: "Sun" }, correct: "A" },
             { round: 6, topic: "Vật Lý", question: "Câu 6 (Vật lý): Vận tốc ánh sáng trong chân không gần bằng bao nhiêu?", options: { A: "300.000 km/s", B: "150.000 km/s", C: "1.000.000 km/s" }, correct: "A" },
             { round: 6, topic: "Hóa Học", question: "Câu 6 (Hóa học): Ký hiệu hóa học của Vàng là gì?", options: { A: "Ag", B: "Au", C: "Fe" }, correct: "B" },
             { round: 7, topic: "Điện Ảnh", question: "Câu 7 (Điện ảnh): Giải thưởng điện ảnh cao quý nhất của Mỹ là gì?", options: { A: "Cành cọ Vàng", B: "Oscar", C: "Quả cầu Vàng" }, correct: "B" },
@@ -387,7 +387,6 @@
             channel.postMessage({ action: 'UPDATE_SCORE', score: mainPlayerScore });
             channel.postMessage({ action: 'UPDATE_LIFELINES', used: lifelineState });
 
-            // Tự động ẩn khung giải thoát (Peek Down) sau khi chọn quyền
             setTimeout(() => {
                 isLifelineTabVisible = false;
                 channel.postMessage({ action: 'TOGGLE_LIFELINES_TAB', show: false });
@@ -469,15 +468,15 @@
         function downloadSampleExcel() {
             const data = [
                 ["Lượt/Mức", "Chủ đề", "Câu hỏi", "Đáp án A", "Đáp án B", "Đáp án C", "Đáp án đúng"],
-                [1, "Toán Học", "Số tự nhiên nhỏ nhất là số nào?", "0", "1", "Không có", "A"],
-                [1, "Khoa Học", "Nước sôi ở bao nhiêu độ C?", "80°C", "90°C", "100°C", "C"],
-                [2, "Lịch Sử", "Chiến thắng Điện Biên Phủ năm nào?", "1945", "1954", "1975", "B"],
-                [2, "Văn Học", "Tác giả Truyện Kiều?", "Nguyễn Du", "Tố Hữu", "Xuân Diệu", "A"]
+                [1, "Âm Nhạc", "Ca khúc nào là Quốc ca Việt Nam?", "Tiến Quân Ca", "Giai Điệu Tự Hào", "Khát Vọng", "A"],
+                [1, "Phim Ảnh", "Phim Dế Mèn Phiêu Lưu Ký của ai?", "Nam Cao", "Tô Hoài", "Xuân Diệu", "B"],
+                [2, "Toán Học", "Số tự nhiên nhỏ nhất?", "0", "1", "Không có", "A"],
+                [2, "Khoa Học", "Nước sôi ở bao nhiêu độ C?", "80°C", "90°C", "100°C", "C"]
             ];
             const ws = XLSX.utils.aoa_to_sheet(data);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "DeThi");
-            XLSX.writeFile(wb, "Mau_De_Thi_1_Dau_100_10_Luot.xlsx");
+            XLSX.writeFile(wb, "Mau_De_Thi_1_Dau_100.xlsx");
         }
 
         function importExcel(e) {
