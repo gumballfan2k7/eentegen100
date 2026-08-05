@@ -78,7 +78,7 @@
             pointer-events: none;
         }
 
-        /* 2. KHUNG CÂU HỎI VÀ THẺ TIÊU ĐỀ */
+        /* 2. KHUNG CÂU HỎI VÀ CÁC TAB PEEK UP / PEEK DOWN */
         .qa-wrapper {
             width: 90%;
             max-width: 1150px;
@@ -93,22 +93,59 @@
             margin-top: 35px;
         }
 
-        .tab-left {
+        /* Khung slot quản lý hiệu ứng Peek Up / Peek Down */
+        .tab-slot-wrapper {
             position: absolute;
-            top: -36px;
+            top: -42px;
             left: 30px;
-            background: #3b1859;
-            border: 2px solid #a855f7;
-            border-bottom: none;
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
+            height: 42px;
+            width: 280px;
+            overflow: hidden;
+            z-index: 3;
+        }
+
+        .tab-item {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 38px;
             padding: 6px 24px;
             font-size: 1.1rem;
             font-weight: bold;
-            color: #e0aaff;
             letter-spacing: 1px;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
-            z-index: 2;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.4);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .tab-1vs100 {
+            background: #3b1859;
+            border: 2px solid #a855f7;
+            border-bottom: none;
+            color: #e0aaff;
+        }
+
+        .tab-score {
+            background: linear-gradient(135deg, #854d0e, #713f12);
+            border: 2px solid #facc15;
+            border-bottom: none;
+            color: #fef08a;
+        }
+
+        .tab-item.show-up {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .tab-item.hidden-down {
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
         }
 
         .tab-right {
@@ -161,12 +198,12 @@
             animation: wipeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* 3. ĐÁP ÁN (ĐÃ SỬA LỖI CẮT CHỮ A, B, C & THÊM TRẠNG THÁI MÀU ĐỎ SAI) */
+        /* 3. ĐÁP ÁN KHÔNG BỊ CẮT CHỮ A, B, C */
         .options-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
-            margin-top: 20px; /* Thêm lề trên để nhãn A, B, C không bị che */
+            margin-top: 20px;
         }
 
         .option-card {
@@ -183,7 +220,7 @@
             text-align: center;
             box-shadow: 0 8px 25px rgba(0,0,0,0.5);
             transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-            overflow: visible !important; /* Đảm bảo nhãn không bị cắt */
+            overflow: visible !important;
         }
 
         @keyframes wipeDown {
@@ -196,7 +233,6 @@
             animation: wipeDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* Định dạng thẻ A, B, C chuẩn mép trên */
         .option-prefix {
             position: absolute;
             top: -18px;
@@ -216,7 +252,6 @@
             line-height: 1.2;
         }
 
-        /* Trạng thái 1: Người chơi chọn (Màu cam) */
         .option-card.player-selected {
             background: linear-gradient(180deg, #b45309 0%, #78350f 100%) !important;
             border-color: #f59e0b !important;
@@ -228,7 +263,6 @@
             border-color: #fef08a !important;
         }
 
-        /* Trạng thái 2: Đáp án Đúng (Màu xanh lá) */
         .option-card.correct {
             background: linear-gradient(180deg, #15803d 0%, #0f5127 100%) !important;
             border-color: #22c55e !important;
@@ -240,7 +274,6 @@
             border-color: #86efac !important;
         }
 
-        /* Trạng thái 3: Đáp án Sai người chơi lỡ chọn (Màu đỏ) */
         .option-card.wrong {
             background: linear-gradient(180deg, #991b1b 0%, #450a0a 100%) !important;
             border-color: #ef4444 !important;
@@ -287,8 +320,12 @@
     <div id="screen-qa" class="screen-container">
         <div class="qa-wrapper">
             <div class="question-container">
-                <!-- Tiêu đề cập nhật số người còn lại -->
-                <div id="tab-left-title" class="tab-left">1 ĐẤU 100</div>
+                
+                <!-- KHUNG CHỨA TAB "1 ĐẤU 100" VÀ TAB "BẢNG ĐIỂM" -->
+                <div class="tab-slot-wrapper">
+                    <div id="tab-left-title" class="tab-item tab-1vs100 show-up">1 ĐẤU 100</div>
+                    <div id="tab-score" class="tab-item tab-score hidden-down">QUỸ ĐIỂM: 0</div>
+                </div>
                 
                 <div id="tab-right-lifelines" class="tab-right">
                     <span id="ll-25" class="lifeline-val">25%</span>
@@ -299,7 +336,6 @@
                 <div id="question-box" class="question-box"></div>
             </div>
 
-            <!-- Khung đáp án 3 cột -->
             <div class="options-grid">
                 <div id="opt-A" class="option-card">
                     <span class="option-prefix">A</span>
@@ -337,12 +373,37 @@
         channel.onmessage = function(event) {
             const data = event.data;
 
-            // Cập nhật số người chơi còn lại
-            if (data.action === 'UPDATE_PLAYER_COUNT') {
+            // Chuyển Tab 1 ĐẤU 100 (Peak Up)
+            if (data.action === 'SHOW_TAB_1VS100') {
+                const tabTitle = document.getElementById('tab-left-title');
+                const tabScore = document.getElementById('tab-score');
+                tabTitle.classList.remove('hidden-down');
+                tabTitle.classList.add('show-up');
+                tabScore.classList.remove('show-up');
+                tabScore.classList.add('hidden-down');
+            }
+
+            // Chuyển Tab BẢNG ĐIỂM (Peak Up) & 1 ĐẤU 100 Peak Down
+            else if (data.action === 'SHOW_TAB_SCORE') {
+                const tabTitle = document.getElementById('tab-left-title');
+                const tabScore = document.getElementById('tab-score');
+                tabScore.classList.remove('hidden-down');
+                tabScore.classList.add('show-up');
+                tabTitle.classList.remove('show-up');
+                tabTitle.classList.add('hidden-down');
+            }
+
+            // Cập nhật giá trị Quỹ điểm
+            else if (data.action === 'UPDATE_SCORE') {
+                document.getElementById('tab-score').innerText = `QUỸ ĐIỂM: ${data.score.toLocaleString('vi-VN')}`;
+            }
+
+            // Cập nhật số lượng người chơi còn lại
+            else if (data.action === 'UPDATE_PLAYER_COUNT') {
                 document.getElementById('tab-left-title').innerText = `1 ĐẤU ${data.activeCount}`;
             }
 
-            // 1. CHỦ ĐỀ
+            // Hiển thị chủ đề
             else if (data.action === 'SHOW_TOPICS') {
                 setScreen('screen-topics');
                 const wrapper = document.getElementById('topics-wrapper');
@@ -368,7 +429,7 @@
                 });
             }
 
-            // 2. TRỢ GIÚP
+            // Trợ giúp
             else if (data.action === 'UPDATE_LIFELINES') {
                 ['25', '50', '75'].forEach(val => {
                     const el = document.getElementById(`ll-${val}`);
@@ -380,7 +441,7 @@
                 });
             }
 
-            // 3. CÂU HỎI & ĐÁP ÁN
+            // Tải câu hỏi & đáp án
             else if (data.action === 'LOAD_QUESTION') {
                 setScreen('screen-qa');
                 selectedPlayerKey = null;
@@ -423,14 +484,12 @@
                 if (opt) opt.classList.add('player-selected');
             }
             else if (data.action === 'SHOW_CORRECT_ANSWER') {
-                // Hiển thị đáp án đúng (Màu Xanh)
                 const correctOpt = document.getElementById(`opt-${data.correctKey}`);
                 if (correctOpt) {
                     correctOpt.classList.remove('player-selected');
                     correctOpt.classList.add('correct');
                 }
 
-                // Nếu người chơi chọn sai, chuyển lựa chọn của người chơi sang Màu Đỏ
                 if (selectedPlayerKey && selectedPlayerKey !== data.correctKey) {
                     const wrongOpt = document.getElementById(`opt-${selectedPlayerKey}`);
                     if (wrongOpt) {
@@ -440,7 +499,7 @@
                 }
             }
 
-            // 4. MÀN HÌNH ĐẾM SỐ NGƯỜI SAI
+            // Đếm số người bị loại
             else if (data.action === 'PREPARE_ELIMINATION') {
                 setScreen('screen-elimination');
                 pendingEliminatedCount = data.count;
