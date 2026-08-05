@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Show - Controller</title>
+    <title>Game Show - Controller (10 Lượt Câu Hỏi)</title>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <style>
         * {
@@ -72,8 +72,6 @@
 
         .btn:hover { background: #9333ea; }
         .btn:disabled { background: #374151 !important; color: #9ca3af; cursor: not-allowed; }
-        .btn-warning { background: #d97706; }
-        .btn-warning:hover { background: #f59e0b; }
         .btn-purple { background: #7e22ce; }
         .btn-purple:hover { background: #9333ea; }
         .btn-danger { background: #be0000; }
@@ -116,7 +114,7 @@
 <body>
 
     <div class="header-bar">
-        <div class="header-title">🎛️ BẢNG ĐIỀU KHIỂN SÂN KHẤU</div>
+        <div class="header-title">🎛️ BẢNG ĐIỀU KHIỂN SÂN KHẤU (10 LƯỢT THI)</div>
         <button class="btn btn-secondary" onclick="window.open('display.html', '_blank', 'width=1280,height=720')">↗️ Mở Trang Display Stage</button>
     </div>
 
@@ -125,10 +123,10 @@
         <!-- 1. EXCEL IMPORT -->
         <div class="panel-box">
             <div class="panel-title">1. Nhập Đề Thi Excel (.xlsx)</div>
-            <button class="btn btn-secondary" onclick="downloadSampleExcel()">📥 Tải File Mẫu</button>
+            <button class="btn btn-secondary" onclick="downloadSampleExcel()">📥 Tải File Mẫu 10 Lượt</button>
             <label class="file-label" for="excel-input">📂 Chọn File Đề</label>
             <input type="file" id="excel-input" accept=".xlsx, .xls" onchange="importExcel(event)">
-            <div id="file-status" class="stats-info">Đã tải bộ câu hỏi mặc định.</div>
+            <div id="file-status" class="stats-info">Đã nạp sẵn bộ đề thi mẫu gồm 10 lượt (20 câu hỏi).</div>
         </div>
 
         <!-- 2. ĐIỀU KHIỂN CHỦ ĐỀ -->
@@ -138,12 +136,12 @@
             <div id="topic-actions" style="margin-top: 10px;"></div>
         </div>
 
-        <!-- 3. TRÌNH CHIẾU CÂU HỎI & CHỐT ĐÁP ÁN (TÍM NHẠT) -->
+        <!-- 3. TRÌNH CHIẾU CÂU HỎI -->
         <div class="panel-box" style="grid-column: span 2;">
             <div class="panel-title">3. Trình Chiếu Câu Hỏi & Chọn Đáp Án Người Chơi</div>
             
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
-                <div><b>Lượt thi hiện tại:</b> <span id="current-q-index" style="color:#c084fc; font-size:1.2rem;">Lượt 1 (Câu 1)</span></div>
+                <div><b>Lượt thi hiện tại:</b> <span id="current-q-index" style="color:#c084fc; font-size:1.2rem;">Lượt 1 / 10</span></div>
                 <div>
                     <button class="btn btn-secondary" onclick="prevQuestion()">⬅️ Lượt Trước</button>
                     <button class="btn btn-secondary" onclick="nextQuestion()">Lượt Tiếp ➡️</button>
@@ -169,7 +167,7 @@
             </div>
         </div>
 
-        <!-- 4. QUYỀN GIẢI THOÁT (CHỈ MỞ TỪ CÂU 2) -->
+        <!-- 4. QUYỀN GIẢI THOÁT -->
         <div class="panel-box">
             <div class="panel-title">4. Quyền Giải Thoát (Chỉ từ Câu 2 trở đi)</div>
             <div id="lifeline-warning" class="warning-box">
@@ -190,7 +188,7 @@
             <div id="bailout-info" style="margin-top: 8px; font-size: 0.85rem; color: #a855f7;"></div>
         </div>
 
-        <!-- 5. CÁC TAB PEEK UP/DOWN & MÀN HÌNH BỊ LOẠI -->
+        <!-- 5. ĐIỀU KHIỂN TAB & MÀN HÌNH LOẠI -->
         <div class="panel-box">
             <div class="panel-title">5. Điều Khiển Tab & Màn Hình Loại</div>
             
@@ -199,7 +197,7 @@
                     🥊 Tab "1 ĐẤU 100" (Peek Up)
                 </button>
                 <button class="btn btn-purple" style="flex: 1;" onclick="showTabScore()">
-                    🏆 Tab Điểm ĐIỂM (Peek Up)
+                    🏆 Tab ĐIỂM (Peek Up)
                 </button>
                 <button class="btn btn-secondary" onclick="hideAllTabs()">
                     🙈 Ẩn 2 Tab
@@ -230,40 +228,32 @@
         let isLifelineTabVisible = false;
 
         let questionsDatabase = [
-            {
-                round: 1,
-                topic: "Toán Học",
-                question: "Câu 1 (Toán): 1 + 1 bằng bao nhiêu?",
-                options: { A: "1", B: "2", C: "3" },
-                correct: "B"
-            },
-            {
-                round: 1,
-                topic: "Khoa Học",
-                question: "Câu 1 (Khoa học): Nước sôi ở bao nhiêu độ C ở điều kiện tiêu chuẩn?",
-                options: { A: "50°C", B: "80°C", C: "100°C" },
-                correct: "C"
-            },
-            {
-                round: 2,
-                topic: "Lịch Sử",
-                question: "Câu 2 (Lịch sử): Chiến thắng Điện Biên Phủ diễn ra vào năm nào?",
-                options: { A: "1945", B: "1954", C: "1975" },
-                correct: "B"
-            },
-            {
-                round: 2,
-                topic: "Văn Học",
-                question: "Câu 2 (Văn học): Tác giả của Truyện Kiều là ai?",
-                options: { A: "Nguyễn Du", B: "Tố Hữu", C: "Xuân Diệu" },
-                correct: "A"
-            }
+            { round: 1, topic: "Toán Học", question: "Câu 1 (Toán): Số tự nhiên nhỏ nhất là số nào?", options: { A: "0", B: "1", C: "Không có" }, correct: "A" },
+            { round: 1, topic: "Khoa Học", question: "Câu 1 (Khoa học): Nước sôi ở bao nhiêu độ C ở điều kiện tiêu chuẩn?", options: { A: "80°C", B: "90°C", C: "100°C" }, correct: "C" },
+            { round: 2, topic: "Lịch Sử", question: "Câu 2 (Lịch sử): Chiến thắng Điện Biên Phủ diễn ra vào năm nào?", options: { A: "1945", B: "1954", C: "1975" }, correct: "B" },
+            { round: 2, topic: "Văn Học", question: "Câu 2 (Văn học): Tác giả của tác phẩm 'Truyện Kiều' là ai?", options: { A: "Nguyễn Du", B: "Tố Hữu", C: "Xuân Diệu" }, correct: "A" },
+            { round: 3, topic: "Địa Lý", question: "Câu 3 (Địa lý): Quốc gia nào có diện tích lớn nhất thế giới?", options: { A: "Trung Quốc", B: "Mỹ", C: "Nga" }, correct: "C" },
+            { round: 3, topic: "Âm Nhạc", question: "Câu 3 (Âm nhạc): Nhạc sĩ nào là tác giả của ca khúc 'Tiến Quân Ca'?", options: { A: "Văn Cao", B: "Trịnh Công Sơn", C: "Phạm Tuyên" }, correct: "A" },
+            { round: 4, topic: "Thể Thao", question: "Câu 4 (Thể thao): Một trận đấu bóng đá chính thức gồm bao nhiêu phút thi đấu chính thức?", options: { A: "80 phút", B: "90 phút", C: "100 phút" }, correct: "B" },
+            { round: 4, topic: "Sinh Học", question: "Câu 4 (Sinh học): Loài động vật có vú nào biết bay?", options: { A: "Sóc bay", B: "Chim cánh cụt", C: "Dơi" }, correct: "C" },
+            { round: 5, topic: "Công Nghệ", question: "Câu 5 (Công nghệ): Hệ điều hành Android do công ty nào phát triển chính?", options: { A: "Apple", B: "Google", C: "Microsoft" }, correct: "B" },
+            { round: 5, topic: "Tiếng Anh", question: "Câu 5 (Tiếng Anh): Từ nào sau đây có nghĩa là 'Trái đất'?", options: { A: "Earth", B: "Moon", C: "Sun" }, correct: "A" },
+            { round: 6, topic: "Vật Lý", question: "Câu 6 (Vật lý): Vận tốc ánh sáng trong chân không gần bằng bao nhiêu?", options: { A: "300.000 km/s", B: "150.000 km/s", C: "1.000.000 km/s" }, correct: "A" },
+            { round: 6, topic: "Hóa Học", question: "Câu 6 (Hóa học): Ký hiệu hóa học của Vàng là gì?", options: { A: "Ag", B: "Au", C: "Fe" }, correct: "B" },
+            { round: 7, topic: "Điện Ảnh", question: "Câu 7 (Điện ảnh): Giải thưởng điện ảnh cao quý nhất của Mỹ là gì?", options: { A: "Cành cọ Vàng", B: "Oscar", C: "Quả cầu Vàng" }, correct: "B" },
+            { round: 7, topic: "Môi Trường", question: "Câu 7 (Môi trường): Khí nào chiếm phần lớn tỉ lệ trong không khí Trái đất?", options: { A: "Oxy", B: "Cacbonic", C: "Nito" }, correct: "C" },
+            { round: 8, topic: "Thiên Văn", question: "Câu 8 (Thiên văn): Hành tinh nào gần Mặt Trời nhất?", options: { A: "Thủy Tinh", B: "Kim Tinh", C: "Hỏa Tinh" }, correct: "A" },
+            { round: 8, topic: "Danh Nhân", question: "Câu 8 (Danh nhân): Ai là người phát minh ra bóng đèn dây tóc thương mại đầu tiên?", options: { A: "Nikola Tesla", B: "Thomas Edison", C: "Albert Einstein" }, correct: "B" },
+            { round: 9, topic: "Văn Hóa", question: "Câu 9 (Văn hóa): Tỉnh nào ở Việt Nam nổi tiếng với làn điệu Dân ca Quan họ?", options: { A: "Bắc Ninh", B: "Nghệ An", C: "Thừa Thiên Huế" }, correct: "A" },
+            { round: 9, topic: "Nghệ Thuật", question: "Câu 9 (Nghệ thuật): Bức tranh nổi tiếng 'Mona Lisa' là tác phẩm của ai?", options: { A: "Vincent van Gogh", B: "Leonardo da Vinci", C: "Pablo Picasso" }, correct: "B" },
+            { round: 10, topic: "Tổng Hợp", question: "Câu 10 (Tổng hợp): Đỉnh núi cao nhất thế giới là đỉnh núi nào?", options: { A: "Everest", B: "Phan-xi-păng", C: "K2" }, correct: "A" },
+            { round: 10, topic: "Đố Mẹo", question: "Câu 10 (Đố mẹo): Cái gì càng thâu lại càng dài?", options: { A: "Con đường", B: "Cái băng rôn", C: "Trận đấu" }, correct: "A" }
         ];
 
         let players = [];
         let totalEliminated = 0;
-        let lastCalculatedEliminated = 0; // x = số người trả lời sai
-        let lastTotalAnswering = 0;        // y = số người trả lời
+        let lastCalculatedEliminated = 0;
+        let lastTotalAnswering = 0;
         let mainPlayerScore = 0;
         let usedBailoutOnCurrentQuestion = false;
         let lifelineState = { '25': false, '50': false, '75': false };
@@ -279,7 +269,7 @@
         }
 
         function updateRoundUI() {
-            document.getElementById('current-q-index').innerText = `Lượt ${currentRound}`;
+            document.getElementById('current-q-index').innerText = `Lượt ${currentRound} / 10`;
             selectedTopic = null;
             activeQuestion = null;
             mainPlayerSelectedAnswer = null;
@@ -376,14 +366,12 @@
             channel.postMessage({ action: 'SHOW_CORRECT_ANSWER', correctKey: activeQuestion.correct });
         }
 
-        /* BẬT/TẮT HIỂN THỊ KHUNG GIẢI THOÁT */
         function toggleLifelineTab() {
             if (currentRound === 1) return alert('Câu 1 không sử dụng Quyền Giải Thoát!');
             isLifelineTabVisible = !isLifelineTabVisible;
             channel.postMessage({ action: 'TOGGLE_LIFELINES_TAB', show: isLifelineTabVisible });
         }
 
-        /* QUYỀN GIẢI THOÁT - TRỪ % ĐIỂM TƯƠNG ỨNG */
         function useBailout(percent) {
             if (currentRound === 1) return;
             const strVal = String(percent);
@@ -398,6 +386,12 @@
 
             channel.postMessage({ action: 'UPDATE_SCORE', score: mainPlayerScore });
             channel.postMessage({ action: 'UPDATE_LIFELINES', used: lifelineState });
+
+            // Tự động ẩn khung giải thoát (Peek Down) sau khi chọn quyền
+            setTimeout(() => {
+                isLifelineTabVisible = false;
+                channel.postMessage({ action: 'TOGGLE_LIFELINES_TAB', show: false });
+            }, 600);
 
             document.getElementById('bailout-info').innerText = `⚠️ Giải Thoát ${percent}%: Trừ ${deductedScore.toLocaleString('vi-VN')} điểm. Điểm còn ${mainPlayerScore.toLocaleString('vi-VN')}`;
             updatePlayerStatsUI();
@@ -415,7 +409,6 @@
             channel.postMessage({ action: 'HIDE_ALL_TABS' });
         }
 
-        /* CÔNG THỨC ĐIỂM MỚI: (10000 * x) / y */
         function calculateRoundBonus() {
             if (lastTotalAnswering === 0) return 0;
             return Math.round((10000 * lastCalculatedEliminated) / lastTotalAnswering);
@@ -430,7 +423,6 @@
             channel.postMessage({ action: 'REVEAL_ELIMINATION' });
             broadcastPlayerCount();
 
-            // TỰ ĐỘNG CỘNG ĐIỂM NẾU TRẢ LỜI ĐÚNG VÀ KHÔNG DÙNG GIẢI THOÁT
             if (activeQuestion && mainPlayerSelectedAnswer === activeQuestion.correct) {
                 if (!usedBailoutOnCurrentQuestion) {
                     const bonus = calculateRoundBonus();
@@ -443,7 +435,7 @@
 
         function calculateRoundElimination() {
             const activePlayers = players.filter(p => p.status === 'active');
-            lastTotalAnswering = activePlayers.length; // y = tổng số người trả lời câu hỏi
+            lastTotalAnswering = activePlayers.length;
 
             if (activePlayers.length === 0) {
                 lastCalculatedEliminated = 0;
@@ -464,7 +456,7 @@
                 }
             }
 
-            lastCalculatedEliminated = count; // x = số người trả lời sai
+            lastCalculatedEliminated = count;
             totalEliminated += count;
             updatePlayerStatsUI();
         }
@@ -477,15 +469,15 @@
         function downloadSampleExcel() {
             const data = [
                 ["Lượt/Mức", "Chủ đề", "Câu hỏi", "Đáp án A", "Đáp án B", "Đáp án C", "Đáp án đúng"],
-                [1, "Toán Học", "Câu 1 (Toán): 1 + 1 bằng mấy?", "1", "2", "3", "B"],
-                [1, "Khoa Học", "Câu 1 (Khoa học): Nước sôi ở bao nhiêu độ C?", "50°C", "80°C", "100°C", "C"],
-                [2, "Lịch Sử", "Câu 2 (Lịch sử): Điện Biên Phủ năm nào?", "1945", "1954", "1975", "B"],
-                [2, "Văn Học", "Câu 2 (Văn học): Tác giả Truyện Kiều?", "Nguyễn Du", "Tố Hữu", "Xuân Diệu", "A"]
+                [1, "Toán Học", "Số tự nhiên nhỏ nhất là số nào?", "0", "1", "Không có", "A"],
+                [1, "Khoa Học", "Nước sôi ở bao nhiêu độ C?", "80°C", "90°C", "100°C", "C"],
+                [2, "Lịch Sử", "Chiến thắng Điện Biên Phủ năm nào?", "1945", "1954", "1975", "B"],
+                [2, "Văn Học", "Tác giả Truyện Kiều?", "Nguyễn Du", "Tố Hữu", "Xuân Diệu", "A"]
             ];
             const ws = XLSX.utils.aoa_to_sheet(data);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "DeThiNhi");
-            XLSX.writeFile(wb, "Mau_De_Thi_1_Dau_100.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "DeThi");
+            XLSX.writeFile(wb, "Mau_De_Thi_1_Dau_100_10_Luot.xlsx");
         }
 
         function importExcel(e) {
@@ -516,7 +508,7 @@
                     document.getElementById('file-status').innerText = `✅ Đã tải ${questionsDatabase.length} câu hỏi từ file Excel.`;
                 }
             };
-            reader.readAsArrayBuffer(file);
+            reader.readAsBuffer(file);
         }
 
         function initPlayers() {
@@ -538,7 +530,7 @@
             const roundBonus = calculateRoundBonus();
             document.getElementById('player-stats').innerHTML = `
                 • Còn thi đấu: <b style="color:#4ade80">${activeCount}</b> | Bị loại: <b style="color:#f87171">${totalEliminated}</b><br>
-                • Số người trả lời sai (x): <b>${lastCalculatedEliminated}</b> / Tổng số người trả lời (y): <b>${lastTotalAnswering}</b><br>
+                • Số người sai (x): <b>${lastCalculatedEliminated}</b> / Tổng số người trả lời (y): <b>${lastTotalAnswering}</b><br>
                 • Điểm thưởng câu này [(10000 × ${lastCalculatedEliminated}) / ${lastTotalAnswering}]: <b style="color:#c084fc">+${roundBonus.toLocaleString('vi-VN')} điểm</b> ${usedBailoutOnCurrentQuestion ? '<i style="color:#f87171">(Đã dùng Giải thoát - Không cộng)</i>' : ''}<br>
                 • Tổng số điểm hiện tại: <b style="color:#c084fc; font-size:1.1rem;">${mainPlayerScore.toLocaleString('vi-VN')}</b>
             `;
