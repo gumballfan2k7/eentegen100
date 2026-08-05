@@ -169,17 +169,18 @@
             </div>
         </div>
 
-        <!-- 4. QUYỀN TRỢ GIÚP -->
+        <!-- 4. QUYỀN GIẢI THOÁT -->
         <div class="panel-box">
-            <div class="panel-title">4. Quyền Trợ Giúp (25% - 50% - 75%)</div>
+            <div class="panel-title">4. Quyền Giải Thoát (Trừ % điểm tương ứng)</div>
             <div id="lifeline-warning" class="warning-box">
-                🚫 <b>Câu đầu tiên: Không hiển thị & không sử dụng quyền trợ giúp.</b>
+                🚫 <b>Câu đầu tiên: Không hiển thị & không sử dụng quyền giải thoát.</b>
             </div>
             <div style="display: flex; gap: 5px;">
-                <button id="btn-ll-25" class="btn btn-secondary" onclick="useLifeline('25')" disabled>Dùng 25%</button>
-                <button id="btn-ll-50" class="btn btn-secondary" onclick="useLifeline('50')" disabled>Dùng 50%</button>
-                <button id="btn-ll-75" class="btn btn-secondary" onclick="useLifeline('75')" disabled>Dùng 75%</button>
+                <button id="btn-ll-25" class="btn btn-secondary" onclick="useBailout(25)" disabled>Giải Thoát 25%</button>
+                <button id="btn-ll-50" class="btn btn-secondary" onclick="useBailout(50)" disabled>Giải Thoát 50%</button>
+                <button id="btn-ll-75" class="btn btn-secondary" onclick="useBailout(75)" disabled>Giải Thoát 75%</button>
             </div>
+            <div id="bailout-info" style="margin-top: 8px; font-size: 0.85rem; color: #a855f7;"></div>
         </div>
 
         <!-- 5. CHUYỂN TAB PEEK UP/DOWN & MÀN HÌNH BỊ LOẠI -->
@@ -193,6 +194,9 @@
                 <button class="btn btn-gold" style="flex: 1;" onclick="showTabScore()">
                     🏆 Tab "BẢNG ĐIỂM" (Peek Up)
                 </button>
+                <button class="btn btn-secondary" onclick="hideAllTabs()">
+                    🙈 Ẩn 2 Tab
+                </button>
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
@@ -200,10 +204,7 @@
                     📺 1. Mở Màn Hình Đếm (Thẻ Tím - Số 0)
                 </button>
                 <button class="btn btn-danger" onclick="revealElimination()">
-                    🚨 2. Lộ Diện Số Người Sai (Cập Nhật 1 ĐẤU X)
-                </button>
-                <button class="btn btn-gold" onclick="addScoreToMainPlayer()">
-                    ➕ Cộng Điểm Đúng Cho Người Chơi Chính
+                    🚨 2. Lộ Diện Số Người Sai & Tự Động Cộng Điểm
                 </button>
             </div>
 
@@ -218,6 +219,7 @@
         let currentRound = 1;
         let selectedTopic = null;
         let activeQuestion = null;
+        let mainPlayerSelectedAnswer = null;
 
         let questionsDatabase = [
             {
@@ -252,9 +254,10 @@
 
         let players = [];
         let totalEliminated = 0;
-        let lastCalculatedEliminated = 0;
-        let lastTotalAnswering = 0;
+        let lastCalculatedEliminated = 0; // x = số người trả lời sai
+        let lastTotalAnswering = 0;        // y = số người trả lời
         let mainPlayerScore = 0;
+        let usedBailoutOnCurrentQuestion = false;
         let lifelineState = { '25': false, '50': false, '75': false };
 
         window.onload = function() {
@@ -271,8 +274,11 @@
             document.getElementById('current-q-index').innerText = `Lượt ${currentRound}`;
             selectedTopic = null;
             activeQuestion = null;
+            mainPlayerSelectedAnswer = null;
+            usedBailoutOnCurrentQuestion = false;
 
             document.getElementById('q-preview').innerHTML = `<i style="color:#a855f7;">Hãy nhấn chọn 1 trong 2 chủ đề phía trên để nạp câu hỏi lượt ${currentRound}...</i>`;
+            document.getElementById('bailout-info').innerText = '';
 
             renderTopicControls();
 
@@ -352,6 +358,7 @@
         }
 
         function selectPlayerAnswer(key) {
+            mainPlayerSelectedAnswer = key;
             channel.postMessage({ action: 'SELECT_PLAYER_ANSWER', key: key });
         }
 
@@ -360,14 +367,29 @@
             channel.postMessage({ action: 'SHOW_CORRECT_ANSWER', correctKey: activeQuestion.correct });
         }
 
-        function useLifeline(val) {
+        /* XỬ LÝ QUYỀN GIẢI THOÁT - TRỪ % ĐIỂM TƯƠNG ỨNG */
+        function useBailout(percent) {
             if (currentRound === 1) return;
-            lifelineState[val] = true;
-            document.getElementById(`btn-ll-${val}`).disabled = true;
+            const strVal = String(percent);
+            lifelineState[strVal] = true;
+            usedBailoutOnCurrentQuestion = true;
+
+            document.getElementById(`btn-ll-${strVal}`).disabled = true;
+
+            // Tính số điểm bị trừ
+            const oldScore = mainPlayerScore;
+            const deductedScore = Math.round(oldScore * (percent / 100));
+            mainPlayerScore = Math.round(oldScore * (1 - percent / 100));
+
+            // Phát tín hiệu cập nhật điểm & quyền trợ giúp
+            channel.postMessage({ action: 'UPDATE_SCORE', score: mainPlayerScore });
             channel.postMessage({ action: 'UPDATE_LIFELINES', used: lifelineState });
+
+            document.getElementById('bailout-info').innerText = `⚠️ Đã dùng Giải Thoát ${percent}%: Trừ ${deductedScore.toLocaleString('vi-VN')} điểm. Quỹ điểm còn ${mainPlayerScore.toLocaleString('vi-VN')}`;
+            updatePlayerStatsUI();
         }
 
-        /* ĐIỀU KHIỂN CHUYỂN TAB (PEEK UP / PEEK DOWN) */
+        /* CHUYỂN TAB PEEK UP / PEEK DOWN */
         function showTab1vs100() {
             channel.postMessage({ action: 'SHOW_TAB_1VS100' });
         }
@@ -376,18 +398,14 @@
             channel.postMessage({ action: 'SHOW_TAB_SCORE' });
         }
 
-        /* TÍNH ĐIỂM THƯỞNG: 1000 * (x/y) */
-        function calculateRoundBonus() {
-            if (lastTotalAnswering === 0) return 0;
-            return Math.round(1000 * (lastCalculatedEliminated / lastTotalAnswering));
+        function hideAllTabs() {
+            channel.postMessage({ action: 'HIDE_ALL_TABS' });
         }
 
-        function addScoreToMainPlayer() {
-            const bonus = calculateRoundBonus();
-            mainPlayerScore += bonus;
-            channel.postMessage({ action: 'UPDATE_SCORE', score: mainPlayerScore });
-            updatePlayerStatsUI();
-            alert(`Đã cộng ${bonus} điểm vào quỹ điểm người chơi chính!`);
+        /* CÔNG THỨC ĐIỂM THƯỞNG: (1000 * x) / y */
+        function calculateRoundBonus() {
+            if (lastTotalAnswering === 0) return 0;
+            return Math.round((1000 * lastCalculatedEliminated) / lastTotalAnswering);
         }
 
         function prepareElimination() {
@@ -398,11 +416,21 @@
         function revealElimination() {
             channel.postMessage({ action: 'REVEAL_ELIMINATION' });
             broadcastPlayerCount();
+
+            // TỰ ĐỘNG CỘNG ĐIỂM NẾU TRẢ LỜI ĐÚNG VÀ KHÔNG DÙNG GIẢI THOÁT
+            if (activeQuestion && mainPlayerSelectedAnswer === activeQuestion.correct) {
+                if (!usedBailoutOnCurrentQuestion) {
+                    const bonus = calculateRoundBonus();
+                    mainPlayerScore += bonus;
+                    channel.postMessage({ action: 'UPDATE_SCORE', score: mainPlayerScore });
+                    updatePlayerStatsUI();
+                }
+            }
         }
 
         function calculateRoundElimination() {
             const activePlayers = players.filter(p => p.status === 'active');
-            lastTotalAnswering = activePlayers.length; // y = số người tham gia trả lời
+            lastTotalAnswering = activePlayers.length; // y = số người tham gia trả lời câu hỏi
 
             if (activePlayers.length === 0) {
                 lastCalculatedEliminated = 0;
@@ -423,7 +451,7 @@
                 }
             }
 
-            lastCalculatedEliminated = count; // x = số người trả lời sai
+            lastCalculatedEliminated = count; // x = tổng số người trả lời sai
             totalEliminated += count;
             updatePlayerStatsUI();
         }
@@ -497,8 +525,8 @@
             const roundBonus = calculateRoundBonus();
             document.getElementById('player-stats').innerHTML = `
                 • Còn thi đấu: <b style="color:#4ade80">${activeCount}</b> | Bị loại: <b style="color:#f87171">${totalEliminated}</b><br>
-                • Số người sai lượt vừa rồi (x): <b>${lastCalculatedEliminated}</b> / (y = ${lastTotalAnswering})<br>
-                • Điểm câu này [1000 × (${lastCalculatedEliminated}/${lastTotalAnswering})]: <b style="color:#facc15">+${roundBonus} điểm</b><br>
+                • Số người trả lời sai (x): <b>${lastCalculatedEliminated}</b> / Tổng số người trả lời (y): <b>${lastTotalAnswering}</b><br>
+                • Điểm câu này [(1000 × ${lastCalculatedEliminated}) / ${lastTotalAnswering}]: <b style="color:#facc15">+${roundBonus} điểm</b> ${usedBailoutOnCurrentQuestion ? '<i style="color:#f87171">(Đã dùng Giải thoát - Không cộng điểm)</i>' : ''}<br>
                 • Tổng quỹ điểm hiện tại: <b style="color:#facc15; font-size:1.1rem;">${mainPlayerScore.toLocaleString('vi-VN')} điểm</b>
             `;
         }
