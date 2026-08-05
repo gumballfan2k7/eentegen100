@@ -74,12 +74,12 @@
         .btn:disabled { background: #374151 !important; color: #9ca3af; cursor: not-allowed; }
         .btn-warning { background: #d97706; }
         .btn-warning:hover { background: #f59e0b; }
+        .btn-purple { background: #7e22ce; }
+        .btn-purple:hover { background: #9333ea; }
         .btn-danger { background: #be0000; }
         .btn-danger:hover { background: #e00000; }
         .btn-success { background: #16a34a; }
         .btn-success:hover { background: #22c55e; }
-        .btn-gold { background: #ca8a04; color: #ffffff; }
-        .btn-gold:hover { background: #eab308; }
         .btn-secondary { background: #374151; }
 
         input[type="file"] { display: none; }
@@ -122,25 +122,25 @@
 
     <div class="control-grid">
 
-        <!-- 1. CẤU HÌNH EXCEL -->
+        <!-- 1. EXCEL IMPORT -->
         <div class="panel-box">
-            <div class="panel-title">1. Đề Thi Theo Lượt & Chủ Đề (.xlsx)</div>
-            <button class="btn btn-secondary" onclick="downloadSampleExcel()">📥 Tải File Excel Mẫu Mới</button>
-            <label class="file-label" for="excel-input">📂 Nhập File Đề</label>
+            <div class="panel-title">1. Nhập Đề Thi Excel (.xlsx)</div>
+            <button class="btn btn-secondary" onclick="downloadSampleExcel()">📥 Tải File Mẫu</button>
+            <label class="file-label" for="excel-input">📂 Chọn File Đề</label>
             <input type="file" id="excel-input" accept=".xlsx, .xls" onchange="importExcel(event)">
-            <div id="file-status" class="stats-info">Đã tải bộ câu hỏi mặc định (2 chủ đề cho mỗi câu).</div>
+            <div id="file-status" class="stats-info">Đã tải bộ câu hỏi mặc định.</div>
         </div>
 
         <!-- 2. ĐIỀU KHIỂN CHỦ ĐỀ -->
         <div class="panel-box">
-            <div class="panel-title">2. Lựa Chọn Chủ Đề Cho Lượt Này</div>
-            <button class="btn btn-secondary" onclick="sendShowTopics()">📺 Hiển Thị Chủ Đề Trận Này</button>
+            <div class="panel-title">2. Lựa Chọn Chủ Đề (Peek Up -> Move To Center)</div>
+            <button class="btn btn-purple" onclick="sendShowTopics()">📺 Hiển Thị Chủ Đề (Peek Up)</button>
             <div id="topic-actions" style="margin-top: 10px;"></div>
         </div>
 
-        <!-- 3. TRÌNH CHIẾU CÂU HỎI & CHỌN ĐÁP ÁN -->
+        <!-- 3. TRÌNH CHIẾU CÂU HỎI & CHỐT ĐÁP ÁN (TÍM NHẠT) -->
         <div class="panel-box" style="grid-column: span 2;">
-            <div class="panel-title">3. Trình Chiếu Câu Hỏi & Ghi Nhận Lựa Chọn Người Chơi</div>
+            <div class="panel-title">3. Trình Chiếu Câu Hỏi & Chọn Đáp Án Người Chơi</div>
             
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
                 <div><b>Lượt thi hiện tại:</b> <span id="current-q-index" style="color:#c084fc; font-size:1.2rem;">Lượt 1 (Câu 1)</span></div>
@@ -162,19 +162,26 @@
             </div>
 
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <button class="btn btn-warning" onclick="selectPlayerAnswer('A')">👤 Người Chơi Chọn A</button>
-                <button class="btn btn-warning" onclick="selectPlayerAnswer('B')">👤 Người Chơi Chọn B</button>
-                <button class="btn btn-warning" onclick="selectPlayerAnswer('C')">👤 Người Chơi Chọn C</button>
-                <button class="btn btn-danger" style="margin-left: auto;" onclick="sendCorrectAnswer()">✅ Hiển Thị Đáp Án Đúng (Đỏ/Xanh)</button>
+                <button class="btn btn-purple" onclick="selectPlayerAnswer('A')">🟪 Chốt Chọn A (Màu Tím)</button>
+                <button class="btn btn-purple" onclick="selectPlayerAnswer('B')">🟪 Chốt Chọn B (Màu Tím)</button>
+                <button class="btn btn-purple" onclick="selectPlayerAnswer('C')">🟪 Chốt Chọn C (Màu Tím)</button>
+                <button class="btn btn-danger" style="margin-left: auto;" onclick="sendCorrectAnswer()">✅ Hiện Đáp Án Đúng (Đỏ/Xanh)</button>
             </div>
         </div>
 
-        <!-- 4. QUYỀN GIẢI THOÁT -->
+        <!-- 4. QUYỀN GIẢI THOÁT (CHỈ MỞ TỪ CÂU 2) -->
         <div class="panel-box">
-            <div class="panel-title">4. Quyền Giải Thoát (Trừ % điểm tương ứng)</div>
+            <div class="panel-title">4. Quyền Giải Thoát (Chỉ từ Câu 2 trở đi)</div>
             <div id="lifeline-warning" class="warning-box">
-                🚫 <b>Câu đầu tiên: Không hiển thị & không sử dụng quyền giải thoát.</b>
+                🚫 <b>Câu 1: Không mở & không được dùng Quyền Giải Thoát.</b>
             </div>
+            
+            <div style="margin-bottom: 10px;">
+                <button id="btn-toggle-lifelines" class="btn btn-purple" onclick="toggleLifelineTab()" disabled>
+                    👁️ Bật/Tắt Hiển Thị Khung Giải Thoát
+                </button>
+            </div>
+
             <div style="display: flex; gap: 5px;">
                 <button id="btn-ll-25" class="btn btn-secondary" onclick="useBailout(25)" disabled>Giải Thoát 25%</button>
                 <button id="btn-ll-50" class="btn btn-secondary" onclick="useBailout(50)" disabled>Giải Thoát 50%</button>
@@ -183,16 +190,16 @@
             <div id="bailout-info" style="margin-top: 8px; font-size: 0.85rem; color: #a855f7;"></div>
         </div>
 
-        <!-- 5. CHUYỂN TAB PEEK UP/DOWN & MÀN HÌNH BỊ LOẠI -->
+        <!-- 5. CÁC TAB PEEK UP/DOWN & MÀN HÌNH BỊ LOẠI -->
         <div class="panel-box">
-            <div class="panel-title">5. Điều Khiển Tab (Peek Up/Down) & Màn Hình Loại</div>
+            <div class="panel-title">5. Điều Khiển Tab & Màn Hình Loại</div>
             
             <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                <button class="btn btn-secondary" style="flex: 1;" onclick="showTab1vs100()">
+                <button class="btn btn-purple" style="flex: 1;" onclick="showTab1vs100()">
                     🥊 Tab "1 ĐẤU 100" (Peek Up)
                 </button>
-                <button class="btn btn-gold" style="flex: 1;" onclick="showTabScore()">
-                    🏆 Tab "BẢNG ĐIỂM" (Peek Up)
+                <button class="btn btn-purple" style="flex: 1;" onclick="showTabScore()">
+                    🏆 Tab Điểm ĐIỂM (Peek Up)
                 </button>
                 <button class="btn btn-secondary" onclick="hideAllTabs()">
                     🙈 Ẩn 2 Tab
@@ -201,10 +208,10 @@
 
             <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
                 <button class="btn btn-secondary" onclick="prepareElimination()">
-                    📺 1. Mở Màn Hình Đếm (Thẻ Tím - Số 0)
+                    📺 1. Mở Màn Hình Đếm Loại (Số 0)
                 </button>
                 <button class="btn btn-danger" onclick="revealElimination()">
-                    🚨 2. Lộ Diện Số Người Sai & Tự Động Cộng Điểm
+                    🚨 2. Hiện Số Người Sai & Tự Động Cộng Điểm
                 </button>
             </div>
 
@@ -220,34 +227,35 @@
         let selectedTopic = null;
         let activeQuestion = null;
         let mainPlayerSelectedAnswer = null;
+        let isLifelineTabVisible = false;
 
         let questionsDatabase = [
             {
                 round: 1,
                 topic: "Toán Học",
                 question: "Câu 1 (Toán): 1 + 1 bằng bao nhiêu?",
-                options: { A: "ĐÁP ÁN A (1)", B: "ĐÁP ÁN B (2)", C: "ĐÁP ÁN C (3)" },
+                options: { A: "1", B: "2", C: "3" },
                 correct: "B"
             },
             {
                 round: 1,
                 topic: "Khoa Học",
                 question: "Câu 1 (Khoa học): Nước sôi ở bao nhiêu độ C ở điều kiện tiêu chuẩn?",
-                options: { A: "ĐÁP ÁN A (50°C)", B: "ĐÁP ÁN B (80°C)", C: "ĐÁP ÁN C (100°C)" },
+                options: { A: "50°C", B: "80°C", C: "100°C" },
                 correct: "C"
             },
             {
                 round: 2,
                 topic: "Lịch Sử",
                 question: "Câu 2 (Lịch sử): Chiến thắng Điện Biên Phủ diễn ra vào năm nào?",
-                options: { A: "ĐÁP ÁN A (1945)", B: "ĐÁP ÁN B (1954)", C: "ĐÁP ÁN C (1975)" },
+                options: { A: "1945", B: "1954", C: "1975" },
                 correct: "B"
             },
             {
                 round: 2,
                 topic: "Văn Học",
                 question: "Câu 2 (Văn học): Tác giả của Truyện Kiều là ai?",
-                options: { A: "ĐÁP ÁN A (Nguyễn Du)", B: "ĐÁP ÁN B (Tố Hữu)", C: "ĐÁP ÁN C (Xuân Diệu)" },
+                options: { A: "Nguyễn Du", B: "Tố Hữu", C: "Xuân Diệu" },
                 correct: "A"
             }
         ];
@@ -276,6 +284,7 @@
             activeQuestion = null;
             mainPlayerSelectedAnswer = null;
             usedBailoutOnCurrentQuestion = false;
+            isLifelineTabVisible = false;
 
             document.getElementById('q-preview').innerHTML = `<i style="color:#a855f7;">Hãy nhấn chọn 1 trong 2 chủ đề phía trên để nạp câu hỏi lượt ${currentRound}...</i>`;
             document.getElementById('bailout-info').innerText = '';
@@ -284,6 +293,7 @@
 
             const isFirstQuestion = (currentRound === 1);
             document.getElementById('lifeline-warning').style.display = isFirstQuestion ? 'block' : 'none';
+            document.getElementById('btn-toggle-lifelines').disabled = isFirstQuestion;
 
             ['25', '50', '75'].forEach(val => {
                 const btn = document.getElementById(`btn-ll-${val}`);
@@ -326,8 +336,7 @@
 
                 channel.postMessage({ 
                     action: 'LOAD_QUESTION', 
-                    questionData: activeQuestion,
-                    isFirstQuestion: (currentRound === 1)
+                    questionData: activeQuestion
                 });
             }
         }
@@ -367,7 +376,14 @@
             channel.postMessage({ action: 'SHOW_CORRECT_ANSWER', correctKey: activeQuestion.correct });
         }
 
-        /* XỬ LÝ QUYỀN GIẢI THOÁT - TRỪ % ĐIỂM TƯƠNG ỨNG */
+        /* BẬT/TẮT HIỂN THỊ KHUNG GIẢI THOÁT */
+        function toggleLifelineTab() {
+            if (currentRound === 1) return alert('Câu 1 không sử dụng Quyền Giải Thoát!');
+            isLifelineTabVisible = !isLifelineTabVisible;
+            channel.postMessage({ action: 'TOGGLE_LIFELINES_TAB', show: isLifelineTabVisible });
+        }
+
+        /* QUYỀN GIẢI THOÁT - TRỪ % ĐIỂM TƯƠNG ỨNG */
         function useBailout(percent) {
             if (currentRound === 1) return;
             const strVal = String(percent);
@@ -376,20 +392,17 @@
 
             document.getElementById(`btn-ll-${strVal}`).disabled = true;
 
-            // Tính số điểm bị trừ
             const oldScore = mainPlayerScore;
             const deductedScore = Math.round(oldScore * (percent / 100));
             mainPlayerScore = Math.round(oldScore * (1 - percent / 100));
 
-            // Phát tín hiệu cập nhật điểm & quyền trợ giúp
             channel.postMessage({ action: 'UPDATE_SCORE', score: mainPlayerScore });
             channel.postMessage({ action: 'UPDATE_LIFELINES', used: lifelineState });
 
-            document.getElementById('bailout-info').innerText = `⚠️ Đã dùng Giải Thoát ${percent}%: Trừ ${deductedScore.toLocaleString('vi-VN')} điểm. Quỹ điểm còn ${mainPlayerScore.toLocaleString('vi-VN')}`;
+            document.getElementById('bailout-info').innerText = `⚠️ Giải Thoát ${percent}%: Trừ ${deductedScore.toLocaleString('vi-VN')} điểm. Điểm còn ${mainPlayerScore.toLocaleString('vi-VN')}`;
             updatePlayerStatsUI();
         }
 
-        /* CHUYỂN TAB PEEK UP / PEEK DOWN */
         function showTab1vs100() {
             channel.postMessage({ action: 'SHOW_TAB_1VS100' });
         }
@@ -402,10 +415,10 @@
             channel.postMessage({ action: 'HIDE_ALL_TABS' });
         }
 
-        /* CÔNG THỨC ĐIỂM THƯỞNG: (1000 * x) / y */
+        /* CÔNG THỨC ĐIỂM MỚI: (10000 * x) / y */
         function calculateRoundBonus() {
             if (lastTotalAnswering === 0) return 0;
-            return Math.round((1000 * lastCalculatedEliminated) / lastTotalAnswering);
+            return Math.round((10000 * lastCalculatedEliminated) / lastTotalAnswering);
         }
 
         function prepareElimination() {
@@ -430,7 +443,7 @@
 
         function calculateRoundElimination() {
             const activePlayers = players.filter(p => p.status === 'active');
-            lastTotalAnswering = activePlayers.length; // y = số người tham gia trả lời câu hỏi
+            lastTotalAnswering = activePlayers.length; // y = tổng số người trả lời câu hỏi
 
             if (activePlayers.length === 0) {
                 lastCalculatedEliminated = 0;
@@ -451,7 +464,7 @@
                 }
             }
 
-            lastCalculatedEliminated = count; // x = tổng số người trả lời sai
+            lastCalculatedEliminated = count; // x = số người trả lời sai
             totalEliminated += count;
             updatePlayerStatsUI();
         }
@@ -471,8 +484,8 @@
             ];
             const ws = XLSX.utils.aoa_to_sheet(data);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "DeThiNhiMultipleTopics");
-            XLSX.writeFile(wb, "Mau_De_Thi_Theo_Luot_And_Chu_De.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "DeThiNhi");
+            XLSX.writeFile(wb, "Mau_De_Thi_1_Dau_100.xlsx");
         }
 
         function importExcel(e) {
@@ -500,7 +513,7 @@
 
                     currentRound = 1;
                     updateRoundUI();
-                    document.getElementById('file-status').innerText = `✅ Đã tải ${questionsDatabase.length} câu hỏi từ Excel.`;
+                    document.getElementById('file-status').innerText = `✅ Đã tải ${questionsDatabase.length} câu hỏi từ file Excel.`;
                 }
             };
             reader.readAsArrayBuffer(file);
@@ -526,8 +539,8 @@
             document.getElementById('player-stats').innerHTML = `
                 • Còn thi đấu: <b style="color:#4ade80">${activeCount}</b> | Bị loại: <b style="color:#f87171">${totalEliminated}</b><br>
                 • Số người trả lời sai (x): <b>${lastCalculatedEliminated}</b> / Tổng số người trả lời (y): <b>${lastTotalAnswering}</b><br>
-                • Điểm câu này [(1000 × ${lastCalculatedEliminated}) / ${lastTotalAnswering}]: <b style="color:#facc15">+${roundBonus} điểm</b> ${usedBailoutOnCurrentQuestion ? '<i style="color:#f87171">(Đã dùng Giải thoát - Không cộng điểm)</i>' : ''}<br>
-                • Tổng quỹ điểm hiện tại: <b style="color:#facc15; font-size:1.1rem;">${mainPlayerScore.toLocaleString('vi-VN')} điểm</b>
+                • Điểm thưởng câu này [(10000 × ${lastCalculatedEliminated}) / ${lastTotalAnswering}]: <b style="color:#c084fc">+${roundBonus.toLocaleString('vi-VN')} điểm</b> ${usedBailoutOnCurrentQuestion ? '<i style="color:#f87171">(Đã dùng Giải thoát - Không cộng)</i>' : ''}<br>
+                • Tổng số điểm hiện tại: <b style="color:#c084fc; font-size:1.1rem;">${mainPlayerScore.toLocaleString('vi-VN')}</b>
             `;
         }
     </script>
