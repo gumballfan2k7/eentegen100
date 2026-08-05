@@ -38,7 +38,7 @@
             display: flex;
         }
 
-        /* 1. HIỂN THỊ CHỦ ĐỀ */
+        /* 1. HIỂN THỊ CHỦ ĐỀ & ANIMATION MOVE TO CENTER */
         .topics-wrapper {
             display: flex;
             gap: 60px;
@@ -58,18 +58,24 @@
             font-weight: bold;
             text-align: center;
             box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-            min-width: 320px;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.3, 1), opacity 0.6s ease, background 0.5s ease, box-shadow 0.5s ease;
+            min-width: 340px;
         }
 
-        .topic-card.selected {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%) scale(1.3);
-            z-index: 10;
+        /* Thẻ bên trái di chuyển sang phải vào chính giữa */
+        .topic-card.selected-left {
+            transform: translateX(calc(50% + 30px)) scale(1.3);
             box-shadow: 0 0 60px #a855f7;
             background: linear-gradient(135deg, #9333ea, #581c87);
+            z-index: 10;
+        }
+
+        /* Thẻ bên phải di chuyển sang trái vào chính giữa */
+        .topic-card.selected-right {
+            transform: translateX(calc(-50% - 30px)) scale(1.3);
+            box-shadow: 0 0 60px #a855f7;
+            background: linear-gradient(135deg, #9333ea, #581c87);
+            z-index: 10;
         }
 
         .topic-card.zoom-out {
@@ -93,7 +99,7 @@
             margin-top: 35px;
         }
 
-        /* Khung slot quản lý hiệu ứng Peek Up / Peek Down */
+        /* Khung slot chứa tab tiêu đề */
         .tab-slot-wrapper {
             position: absolute;
             top: -42px;
@@ -109,6 +115,7 @@
             bottom: 0;
             left: 0;
             height: 38px;
+            width: 100%;
             padding: 6px 24px;
             font-size: 1.1rem;
             font-weight: bold;
@@ -121,6 +128,9 @@
             align-items: center;
             justify-content: center;
             white-space: nowrap;
+            /* Mặc định nằm ẩn phía dưới (Peek Down) */
+            transform: translateY(100%);
+            opacity: 0;
         }
 
         .tab-1vs100 {
@@ -323,8 +333,8 @@
                 
                 <!-- KHUNG CHỨA TAB "1 ĐẤU 100" VÀ TAB "BẢNG ĐIỂM" -->
                 <div class="tab-slot-wrapper">
-                    <div id="tab-left-title" class="tab-item tab-1vs100 show-up">1 ĐẤU 100</div>
-                    <div id="tab-score" class="tab-item tab-score hidden-down">QUỸ ĐIỂM: 0</div>
+                    <div id="tab-left-title" class="tab-item tab-1vs100">1 ĐẤU 100</div>
+                    <div id="tab-score" class="tab-item tab-score">QUỸ ĐIỂM: 0</div>
                 </div>
                 
                 <div id="tab-right-lifelines" class="tab-right">
@@ -373,7 +383,7 @@
         channel.onmessage = function(event) {
             const data = event.data;
 
-            // Chuyển Tab 1 ĐẤU 100 (Peak Up)
+            // Peek Up Tab 1 ĐẤU 100 & Peek Down Tab Score
             if (data.action === 'SHOW_TAB_1VS100') {
                 const tabTitle = document.getElementById('tab-left-title');
                 const tabScore = document.getElementById('tab-score');
@@ -383,7 +393,7 @@
                 tabScore.classList.add('hidden-down');
             }
 
-            // Chuyển Tab BẢNG ĐIỂM (Peak Up) & 1 ĐẤU 100 Peak Down
+            // Peek Up Tab Score & Peek Down Tab 1 ĐẤU 100
             else if (data.action === 'SHOW_TAB_SCORE') {
                 const tabTitle = document.getElementById('tab-left-title');
                 const tabScore = document.getElementById('tab-score');
@@ -391,6 +401,16 @@
                 tabScore.classList.add('show-up');
                 tabTitle.classList.remove('show-up');
                 tabTitle.classList.add('hidden-down');
+            }
+
+            // Ẩn cả 2 Tab (Peek Down)
+            else if (data.action === 'HIDE_ALL_TABS') {
+                const tabTitle = document.getElementById('tab-left-title');
+                const tabScore = document.getElementById('tab-score');
+                tabTitle.classList.remove('show-up');
+                tabTitle.classList.add('hidden-down');
+                tabScore.classList.remove('show-up');
+                tabScore.classList.add('hidden-down');
             }
 
             // Cập nhật giá trị Quỹ điểm
@@ -403,7 +423,7 @@
                 document.getElementById('tab-left-title').innerText = `1 ĐẤU ${data.activeCount}`;
             }
 
-            // Hiển thị chủ đề
+            // Hiển thị các chủ đề
             else if (data.action === 'SHOW_TOPICS') {
                 setScreen('screen-topics');
                 const wrapper = document.getElementById('topics-wrapper');
@@ -416,20 +436,26 @@
                     wrapper.appendChild(card);
                 });
             } 
+            
+            // Chọn chủ đề: Move to center cho thẻ chọn, Zoom out cho thẻ còn lại
             else if (data.action === 'SELECT_TOPIC') {
                 setScreen('screen-topics');
-                document.querySelectorAll('.topic-card').forEach(card => {
+                const cards = document.querySelectorAll('.topic-card');
+                cards.forEach((card, index) => {
+                    card.classList.remove('selected-left', 'selected-right', 'zoom-out');
                     if (card.dataset.topic === data.topicName) {
-                        card.classList.remove('zoom-out');
-                        card.classList.add('selected');
+                        if (index === 0) {
+                            card.classList.add('selected-left');
+                        } else {
+                            card.classList.add('selected-right');
+                        }
                     } else {
-                        card.classList.remove('selected');
                         card.classList.add('zoom-out');
                     }
                 });
             }
 
-            // Trợ giúp
+            // Trợ giúp / Quyền giải thoát
             else if (data.action === 'UPDATE_LIFELINES') {
                 ['25', '50', '75'].forEach(val => {
                     const el = document.getElementById(`ll-${val}`);
@@ -441,10 +467,16 @@
                 });
             }
 
-            // Tải câu hỏi & đáp án
+            // Tải câu hỏi & đáp án (Mặc định ẩn các Tab)
             else if (data.action === 'LOAD_QUESTION') {
                 setScreen('screen-qa');
                 selectedPlayerKey = null;
+
+                // Mặc định ẩn cả 2 tab (Default không hiển thị)
+                document.getElementById('tab-left-title').classList.remove('show-up');
+                document.getElementById('tab-left-title').classList.add('hidden-down');
+                document.getElementById('tab-score').classList.remove('show-up');
+                document.getElementById('tab-score').classList.add('hidden-down');
 
                 const lifelineTab = document.getElementById('tab-right-lifelines');
                 lifelineTab.style.display = data.isFirstQuestion ? 'none' : 'flex';
@@ -499,7 +531,7 @@
                 }
             }
 
-            // Đếm số người bị loại
+            // Màn hình đếm số người bị loại
             else if (data.action === 'PREPARE_ELIMINATION') {
                 setScreen('screen-elimination');
                 pendingEliminatedCount = data.count;
