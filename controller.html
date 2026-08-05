@@ -78,6 +78,8 @@
         .btn-danger:hover { background: #e00000; }
         .btn-success { background: #16a34a; }
         .btn-success:hover { background: #22c55e; }
+        .btn-gold { background: #ca8a04; color: #ffffff; }
+        .btn-gold:hover { background: #eab308; }
         .btn-secondary { background: #374151; }
 
         input[type="file"] { display: none; }
@@ -97,7 +99,7 @@
             border-radius: 6px;
             margin-top: 10px;
             font-size: 0.9rem;
-            line-height: 1.4;
+            line-height: 1.5;
         }
 
         .warning-box {
@@ -180,17 +182,31 @@
             </div>
         </div>
 
-        <!-- 5. MÀN HÌNH BỊ LOẠI -->
+        <!-- 5. CHUYỂN TAB PEEK UP/DOWN & MÀN HÌNH BỊ LOẠI -->
         <div class="panel-box">
-            <div class="panel-title">5. Màn Hình Số Người Bị Loại & Cập Nhật "1 ĐẤU X"</div>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                <button class="btn btn-secondary" style="padding: 10px;" onclick="prepareElimination()">
-                    📺 1. Mở Màn Hình Đếm (Thẻ Tím - Số 0)
+            <div class="panel-title">5. Điều Khiển Tab (Peek Up/Down) & Màn Hình Loại</div>
+            
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <button class="btn btn-secondary" style="flex: 1;" onclick="showTab1vs100()">
+                    🥊 Tab "1 ĐẤU 100" (Peek Up)
                 </button>
-                <button class="btn btn-danger" style="padding: 10px;" onclick="revealElimination()">
-                    🚨 2. Lộ Diện Số Người Sai (Cập nhật 1 ĐẤU X mới)
+                <button class="btn btn-gold" style="flex: 1;" onclick="showTabScore()">
+                    🏆 Tab "BẢNG ĐIỂM" (Peek Up)
                 </button>
             </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
+                <button class="btn btn-secondary" onclick="prepareElimination()">
+                    📺 1. Mở Màn Hình Đếm (Thẻ Tím - Số 0)
+                </button>
+                <button class="btn btn-danger" onclick="revealElimination()">
+                    🚨 2. Lộ Diện Số Người Sai (Cập Nhật 1 ĐẤU X)
+                </button>
+                <button class="btn btn-gold" onclick="addScoreToMainPlayer()">
+                    ➕ Cộng Điểm Đúng Cho Người Chơi Chính
+                </button>
+            </div>
+
             <div id="player-stats" class="stats-info"></div>
         </div>
 
@@ -237,6 +253,8 @@
         let players = [];
         let totalEliminated = 0;
         let lastCalculatedEliminated = 0;
+        let lastTotalAnswering = 0;
+        let mainPlayerScore = 0;
         let lifelineState = { '25': false, '50': false, '75': false };
 
         window.onload = function() {
@@ -349,6 +367,29 @@
             channel.postMessage({ action: 'UPDATE_LIFELINES', used: lifelineState });
         }
 
+        /* ĐIỀU KHIỂN CHUYỂN TAB (PEEK UP / PEEK DOWN) */
+        function showTab1vs100() {
+            channel.postMessage({ action: 'SHOW_TAB_1VS100' });
+        }
+
+        function showTabScore() {
+            channel.postMessage({ action: 'SHOW_TAB_SCORE' });
+        }
+
+        /* TÍNH ĐIỂM THƯỞNG: 1000 * (x/y) */
+        function calculateRoundBonus() {
+            if (lastTotalAnswering === 0) return 0;
+            return Math.round(1000 * (lastCalculatedEliminated / lastTotalAnswering));
+        }
+
+        function addScoreToMainPlayer() {
+            const bonus = calculateRoundBonus();
+            mainPlayerScore += bonus;
+            channel.postMessage({ action: 'UPDATE_SCORE', score: mainPlayerScore });
+            updatePlayerStatsUI();
+            alert(`Đã cộng ${bonus} điểm vào quỹ điểm người chơi chính!`);
+        }
+
         function prepareElimination() {
             calculateRoundElimination();
             channel.postMessage({ action: 'PREPARE_ELIMINATION', count: lastCalculatedEliminated });
@@ -356,12 +397,13 @@
 
         function revealElimination() {
             channel.postMessage({ action: 'REVEAL_ELIMINATION' });
-            // Cập nhật số người còn lại lên Display Stage
             broadcastPlayerCount();
         }
 
         function calculateRoundElimination() {
             const activePlayers = players.filter(p => p.status === 'active');
+            lastTotalAnswering = activePlayers.length; // y = số người tham gia trả lời
+
             if (activePlayers.length === 0) {
                 lastCalculatedEliminated = 0;
                 return;
@@ -381,7 +423,7 @@
                 }
             }
 
-            lastCalculatedEliminated = count;
+            lastCalculatedEliminated = count; // x = số người trả lời sai
             totalEliminated += count;
             updatePlayerStatsUI();
         }
@@ -445,16 +487,19 @@
                 players.push({ id: i, iq: Math.floor(Math.random() * (140 - 85 + 1)) + 85, status: 'active' });
             }
             totalEliminated = 0;
+            mainPlayerScore = 0;
             updatePlayerStatsUI();
             setTimeout(broadcastPlayerCount, 500);
         }
 
         function updatePlayerStatsUI() {
             const activeCount = players.filter(p => p.status === 'active').length;
-            const topPlayer = players.reduce((max, p) => p.iq > max.iq ? p : max, players[0]);
+            const roundBonus = calculateRoundBonus();
             document.getElementById('player-stats').innerHTML = `
                 • Còn thi đấu: <b style="color:#4ade80">${activeCount}</b> | Bị loại: <b style="color:#f87171">${totalEliminated}</b><br>
-                • Top 1 IQ: <b>IQ ${topPlayer.iq}</b> (${topPlayer.status === 'active' ? 'Còn thi đấu' : 'Đã loại'})
+                • Số người sai lượt vừa rồi (x): <b>${lastCalculatedEliminated}</b> / (y = ${lastTotalAnswering})<br>
+                • Điểm câu này [1000 × (${lastCalculatedEliminated}/${lastTotalAnswering})]: <b style="color:#facc15">+${roundBonus} điểm</b><br>
+                • Tổng quỹ điểm hiện tại: <b style="color:#facc15; font-size:1.1rem;">${mainPlayerScore.toLocaleString('vi-VN')} điểm</b>
             `;
         }
     </script>
