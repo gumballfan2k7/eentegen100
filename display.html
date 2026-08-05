@@ -38,7 +38,7 @@
             display: flex;
         }
 
-        /* 1. ANIMATION CHỦ ĐỀ (DỌC THEO VIDEO) */
+        /* 1. ANIMATION CHỦ ĐỀ DỌC */
         .topics-wrapper {
             display: flex;
             flex-direction: column;
@@ -86,14 +86,14 @@
             z-index: 10;
         }
 
-        /* Thẻ không được chọn -> Biến mất */
+        /* Thẻ không được chọn -> Zoom out & Biến mất */
         .topic-card.zoom-out {
             transform: scale(0.6) !important;
             opacity: 0 !important;
             pointer-events: none;
         }
 
-        /* 2. KHUNG CÂU HỎI & TAB THIẾT KẾ GỌN */
+        /* 2. KHUNG CÂU HỎI & TAB */
         .qa-wrapper {
             width: 90%;
             max-width: 1150px;
@@ -155,7 +155,6 @@
             pointer-events: none;
         }
 
-        /* Tab Quyền Giải Thoát */
         .tab-right {
             position: absolute;
             top: -38px;
@@ -217,7 +216,7 @@
             animation: wipeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* 3. CÁC THẺ ĐÁP ÁN */
+        /* 3. ĐÁP ÁN */
         .options-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -380,6 +379,26 @@
             document.getElementById(screenId).classList.add('active');
         }
 
+        function loadQuestionData(questionData) {
+            selectedPlayerKey = null;
+            document.getElementById('tab-left-title').classList.remove('show-up');
+            document.getElementById('tab-left-title').classList.add('hidden-down');
+            document.getElementById('tab-score').classList.remove('show-up');
+            document.getElementById('tab-score').classList.add('hidden-down');
+            document.getElementById('tab-right-lifelines').classList.remove('show-up');
+
+            const qBox = document.getElementById('question-box');
+            qBox.classList.remove('wipe-up');
+            qBox.innerText = questionData.question;
+
+            ['A', 'B', 'C'].forEach(key => {
+                const opt = document.getElementById(`opt-${key}`);
+                opt.classList.remove('wipe-down', 'correct', 'wrong', 'player-selected');
+                opt.querySelector('.option-prefix').innerText = key;
+                opt.querySelector('.opt-text').innerText = questionData.options[key] || '';
+            });
+        }
+
         channel.onmessage = function(event) {
             const data = event.data;
 
@@ -434,7 +453,7 @@
                 });
             } 
             else if (data.action === 'SELECT_TOPIC') {
-                setScreen('screen-topics');
+                setScreen('screen-topics'); // Giữ nguyên màn hình chủ đề
                 const cards = document.querySelectorAll('.topic-card');
                 cards.forEach((card, index) => {
                     card.classList.remove('selected-top', 'selected-bottom', 'zoom-out');
@@ -449,6 +468,15 @@
                     }
                 });
             }
+            else if (data.action === 'PRELOAD_QUESTION') {
+                loadQuestionData(data.questionData);
+            }
+            else if (data.action === 'SWITCH_TO_QA_SCREEN') {
+                setScreen('screen-qa');
+                if (data.questionData) {
+                    loadQuestionData(data.questionData);
+                }
+            }
             else if (data.action === 'UPDATE_LIFELINES') {
                 ['25', '50', '75'].forEach(val => {
                     const el = document.getElementById(`ll-${val}`);
@@ -457,27 +485,6 @@
                     } else {
                         el.classList.remove('used');
                     }
-                });
-            }
-            else if (data.action === 'LOAD_QUESTION') {
-                setScreen('screen-qa');
-                selectedPlayerKey = null;
-
-                document.getElementById('tab-left-title').classList.remove('show-up');
-                document.getElementById('tab-left-title').classList.add('hidden-down');
-                document.getElementById('tab-score').classList.remove('show-up');
-                document.getElementById('tab-score').classList.add('hidden-down');
-                document.getElementById('tab-right-lifelines').classList.remove('show-up');
-
-                const qBox = document.getElementById('question-box');
-                qBox.classList.remove('wipe-up');
-                qBox.innerText = data.questionData.question;
-
-                ['A', 'B', 'C'].forEach(key => {
-                    const opt = document.getElementById(`opt-${key}`);
-                    opt.classList.remove('wipe-down', 'correct', 'wrong', 'player-selected');
-                    opt.querySelector('.option-prefix').innerText = key;
-                    opt.querySelector('.opt-text').innerText = data.questionData.options[key] || '';
                 });
             }
             else if (data.action === 'ANIMATE_QUESTION') {
