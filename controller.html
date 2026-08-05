@@ -131,7 +131,7 @@
 
         <!-- 2. ĐIỀU KHIỂN CHỦ ĐỀ -->
         <div class="panel-box">
-            <div class="panel-title">2. Lựa Chọn Chủ Đề (Dọc Theo Video)</div>
+            <div class="panel-title">2. Lựa Chọn Chủ Đề (Dọc)</div>
             <button class="btn btn-purple" onclick="sendShowTopics()">📺 Hiển Thị 2 Chủ Đề (Dọc)</button>
             <div id="topic-actions" style="margin-top: 10px;"></div>
         </div>
@@ -153,7 +153,7 @@
             </div>
 
             <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
-                <button class="btn btn-success" onclick="sendAnimateQuestion()">⬆️ Hiện Câu Hỏi (Wipe Up)</button>
+                <button class="btn btn-success" onclick="sendAnimateQuestion()">⬆️ Chuyển Sang Màn Hình & Hiện Câu Hỏi (Wipe Up)</button>
                 <button class="btn" onclick="sendAnimateOption('A')">⬇️ Hiện Đáp Án A</button>
                 <button class="btn" onclick="sendAnimateOption('B')">⬇️ Hiện Đáp Án B</button>
                 <button class="btn" onclick="sendAnimateOption('C')">⬇️ Hiện Đáp Án C</button>
@@ -241,13 +241,9 @@
             { round: 6, topic: "Vật Lý", question: "Câu 6 (Vật lý): Vận tốc ánh sáng trong chân không gần bằng bao nhiêu?", options: { A: "300.000 km/s", B: "150.000 km/s", C: "1.000.000 km/s" }, correct: "A" },
             { round: 6, topic: "Hóa Học", question: "Câu 6 (Hóa học): Ký hiệu hóa học của Vàng là gì?", options: { A: "Ag", B: "Au", C: "Fe" }, correct: "B" },
             { round: 7, topic: "Điện Ảnh", question: "Câu 7 (Điện ảnh): Giải thưởng điện ảnh cao quý nhất của Mỹ là gì?", options: { A: "Cành cọ Vàng", B: "Oscar", C: "Quả cầu Vàng" }, correct: "B" },
-            { round: 7, topic: "Môi Trường", question: "Câu 7 (Môi trường): Khí nào chiếm phần lớn tỉ lệ trong không khí Trái đất?", options: { A: "Oxy", B: "Cacbonic", C: "Nito" }, correct: "C" },
             { round: 8, topic: "Thiên Văn", question: "Câu 8 (Thiên văn): Hành tinh nào gần Mặt Trời nhất?", options: { A: "Thủy Tinh", B: "Kim Tinh", C: "Hỏa Tinh" }, correct: "A" },
-            { round: 8, topic: "Danh Nhân", question: "Câu 8 (Danh nhân): Ai là người phát minh ra bóng đèn dây tóc thương mại đầu tiên?", options: { A: "Nikola Tesla", B: "Thomas Edison", C: "Albert Einstein" }, correct: "B" },
             { round: 9, topic: "Văn Hóa", question: "Câu 9 (Văn hóa): Tỉnh nào ở Việt Nam nổi tiếng với làn điệu Dân ca Quan họ?", options: { A: "Bắc Ninh", B: "Nghệ An", C: "Thừa Thiên Huế" }, correct: "A" },
-            { round: 9, topic: "Nghệ Thuật", question: "Câu 9 (Nghệ thuật): Bức tranh nổi tiếng 'Mona Lisa' là tác phẩm của ai?", options: { A: "Vincent van Gogh", B: "Leonardo da Vinci", C: "Pablo Picasso" }, correct: "B" },
-            { round: 10, topic: "Tổng Hợp", question: "Câu 10 (Tổng hợp): Đỉnh núi cao nhất thế giới là đỉnh núi nào?", options: { A: "Everest", B: "Phan-xi-păng", C: "K2" }, correct: "A" },
-            { round: 10, topic: "Đố Mẹo", question: "Câu 10 (Đố mẹo): Cái gì càng thâu lại càng dài?", options: { A: "Con đường", B: "Cái băng rôn", C: "Trận đấu" }, correct: "A" }
+            { round: 10, topic: "Tổng Hợp", question: "Câu 10 (Tổng hợp): Đỉnh núi cao nhất thế giới là đỉnh núi nào?", options: { A: "Everest", B: "Phan-xi-păng", C: "K2" }, correct: "A" }
         ];
 
         let players = [];
@@ -281,6 +277,9 @@
 
             renderTopicControls();
 
+            // Tự động chuyển màn hình hiển thị sang Màn hình Chủ đề khi chuyển lượt (Tắt màn hình bị loại)
+            sendShowTopics();
+
             const isFirstQuestion = (currentRound === 1);
             document.getElementById('lifeline-warning').style.display = isFirstQuestion ? 'block' : 'none';
             document.getElementById('btn-toggle-lifelines').disabled = isFirstQuestion;
@@ -312,6 +311,8 @@
 
         function selectTopic(topicName) {
             selectedTopic = topicName;
+            
+            // Gửi lệnh SELECT_TOPIC để Display giữ nguyên animation căn giữa thẻ chủ đề được chọn
             channel.postMessage({ action: 'SELECT_TOPIC', topicName: topicName });
 
             activeQuestion = questionsDatabase.find(q => q.round === currentRound && q.topic === topicName);
@@ -324,8 +325,9 @@
                     <b style="color:#22c55e;">Đáp án đúng: ${activeQuestion.correct}</b>
                 `;
 
+                // Preload sẵn dữ liệu câu hỏi ở background nhưng KHÔNG chuyển màn hình ngay
                 channel.postMessage({ 
-                    action: 'LOAD_QUESTION', 
+                    action: 'PRELOAD_QUESTION', 
                     questionData: activeQuestion
                 });
             }
@@ -348,6 +350,8 @@
 
         function sendAnimateQuestion() {
             if (!activeQuestion) return alert('Vui lòng chọn chủ đề trước!');
+            // Bây giờ mới chuyển sang màn hình câu hỏi và kích hoạt Wipe Up
+            channel.postMessage({ action: 'SWITCH_TO_QA_SCREEN', questionData: activeQuestion });
             channel.postMessage({ action: 'ANIMATE_QUESTION' });
         }
 
