@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Een Tegen 100 — Controller</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="app controller">
+    <h1>Controller</h1>
+    <section>
+      <label>Upload questions (.xlsx): <input id="file" type="file" accept=".xlsx"/></label>
+      <button id="upload">Upload</button>
+      <div id="uploadResult"></div>
+    </section>
+
+    <section>
+      <h2>Round control</h2>
+      <button data-cmd="start-round">Start Round</button>
+      <button data-cmd="show-question">Show Question</button>
+      <button data-cmd="reveal-answer">Reveal Answer</button>
+      <button data-cmd="end-round">End Round</button>
+    </section>
+
+    <section>
+      <h2>Question list (first 10)</h2>
+      <ol id="qList"></ol>
+    </section>
+  </div>
+
+  <script src="/controller.js"></script>
+</body>
+</html>
