@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Een Tegen 100 - Controller</title>
+    <link rel="stylesheet" href="controller.css">
+</head>
+<body>
+    <div class="controller-container">
+        <header class="controller-header">
+            <h1>CONTROLLER - Een Tegen 100</h1>
+            <div class="connection-status">
+                <span id="connectionStatus" class="status-indicator offline">Offline</span>
+            </div>
+        </header>
+
+        <div class="upload-section">
+            <h2>📋 Upload Questions</h2>
+            <div class="upload-area">
+                <input type="file" id="fileInput" accept=".xlsx,.xls" />
+                <label for="fileInput" class="upload-label">
+                    <span>📁 Choose XLSX File or Drag & Drop</span>
+                </label>
+                <button id="uploadBtn" class="btn btn-primary">Upload Questions</button>
+                <div id="uploadStatus" class="status-message"></div>
+            </div>
+        </div>
+
+        <div class="control-section">
+            <h2>🎮 Game Control</h2>
+            <div class="button-grid">
+                <button id="startGameBtn" class="btn btn-lg btn-success">Start Game</button>
+                <button id="nextQuestionBtn" class="btn btn-lg btn-primary" disabled>Next Question</button>
+                <button id="endGameBtn" class="btn btn-lg btn-danger" disabled>End Game</button>
+            </div>
+        </div>
+
+        <div class="question-section">
+            <h2>❓ Current Question</h2>
+            <div class="question-display">
+                <div id="questionContent" class="question-content">
+                    <p>No question loaded</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="answer-section">
+            <h2>✅ Answer Management</h2>
+            <div class="answer-control">
+                <div class="answer-buttons">
+                    <button class="answer-btn" data-answer="A">A</button>
+                    <button class="answer-btn" data-answer="B">B</button>
+                    <button class="answer-btn" data-answer="C">C</button>
+                    <button class="answer-btn" data-answer="D">D</button>
+                </div>
+                <button id="submitCorrectBtn" class="btn btn-submit" disabled>Submit Correct Answer</button>
+            </div>
+            <div id="resultMessage" class="result-message"></div>
+        </div>
+
+        <div class="lifelines-section">
+            <h2>🎯 Lifelines</h2>
+            <div class="lifeline-buttons">
+                <button class="lifeline-btn" data-lifeline="pollTheMob" id="lifeline-poll">
+                    <span class="lifeline-name">Poll the Mob</span>
+                    <span class="lifeline-status">Available</span>
+                </button>
+                <button class="lifeline-btn" data-lifeline="askTheMob" id="lifeline-ask">
+                    <span class="lifeline-name">Ask the Mob</span>
+                    <span class="lifeline-status">Available</span>
+                </button>
+                <button class="lifeline-btn" data-lifeline="trustTheMob" id="lifeline-trust">
+                    <span class="lifeline-name">Trust the Mob</span>
+                    <span class="lifeline-status">Available</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <h2>📊 Game Stats</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">Eliminated</span>
+                    <span id="eliminatedCount" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Prize Pool</span>
+                    <span id="prizePool" class="stat-value">€0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Current Prize</span>
+                    <span id="currentPrize" class="stat-value">€500</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="controller.js"></script>
+</body>
+</html>
