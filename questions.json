@@ -1,0 +1,268 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "Geschiedenis",
+      "icon": "🏛️",
+      "color": "#FF6B00",
+      "questions": [
+        {
+          "id": 1,
+          "question": "In welk jaar viel de Berlijnse Muur?",
+          "options": {
+            "A": "1989",
+            "B": "1991",
+            "C": "1987",
+            "D": "1985"
+          },
+          "correct": "A",
+          "difficulty": 1
+        },
+        {
+          "id": 2,
+          "question": "Wie was de eerste president van de Verenigde Staten?",
+          "options": {
+            "A": "Thomas Jefferson",
+            "B": "George Washington",
+            "C": "Benjamin Franklin",
+            "D": "Alexander Hamilton"
+          },
+          "correct": "B",
+          "difficulty": 1
+        },
+        {
+          "id": 3,
+          "question": "In welk jaar begon de Franse Revolutie?",
+          "options": {
+            "A": "1789",
+            "B": "1799",
+            "C": "1779",
+            "D": "1769"
+          },
+          "correct": "A",
+          "difficulty": 1
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Geografie",
+      "icon": "🌍",
+      "color": "#0066FF",
+      "questions": [
+        {
+          "id": 1,
+          "question": "Wat is de hoofdstad van Nederland?",
+          "options": {
+            "A": "Rotterdam",
+            "B": "Den Haag",
+            "C": "Amsterdam",
+            "D": "Utrecht"
+          },
+          "correct": "C",
+          "difficulty": 1
+        },
+        {
+          "id": 2,
+          "question": "Welke rivier is de langste in Europa?",
+          "options": {
+            "A": "De Donau",
+            "B": "De Wolga",
+            "C": "De Rijn",
+            "D": "De Theems"
+          },
+          "correct": "B",
+          "difficulty": 2
+        },
+        {
+          "id": 3,
+          "question": "Hoeveel continenten zijn er?",
+          "options": {
+            "A": "5",
+            "B": "6",
+            "C": "7",
+            "D": "8"
+          },
+          "correct": "C",
+          "difficulty": 1
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Wetenschap",
+      "icon": "🔬",
+      "color": "#00CC44",
+      "questions": [
+        {
+          "id": 1,
+          "question": "Wat is het chemische symbool voor goud?",
+          "options": {
+            "A": "Go",
+            "B": "Au",
+            "C": "Gd",
+            "D": "Gl"
+          },
+          "correct": "B",
+          "difficulty": 1
+        },
+        {
+          "id": 2,
+          "question": "Welke planeet is het dichtst bij de zon?",
+          "options": {
+            "A": "Venus",
+            "B": "Mercurius",
+            "C": "Mars",
+            "D": "Aarde"
+          },
+          "correct": "B",
+          "difficulty": 1
+        },
+        {
+          "id": 3,
+          "question": "Wat is de snelheid van het licht?",
+          "options": {
+            "A": "300.000 km/s",
+            "B": "3.000.000 km/s",
+            "C": "30.000 km/s",
+            "D": "3.000 km/s"
+          },
+          "correct": "A",
+          "difficulty": 2
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Sport",
+      "icon": "⚽",
+      "color": "#FF3333",
+      "questions": [
+        {
+          "id": 1,
+          "question": "Hoeveel teams spelen er in de Eredivisie?",
+          "options": {
+            "A": "16",
+            "B": "18",
+            "C": "20",
+            "D": "22"
+          },
+          "correct": "B",
+          "difficulty": 1
+        },
+        {
+          "id": 2,
+          "question": "In welk land werden de Olympische Spelen van 2020 gehouden?",
+          "options": {
+            "A": "China",
+            "B": "Zuid-Korea",
+            "C": "Japan",
+            "D": "Thailand"
+          },
+          "correct": "C",
+          "difficulty": 1
+        },
+        {
+          "id": 3,
+          "question": "Hoeveel doelpunten maakte Pelé in totaal?",
+          "options": {
+            "A": "757",
+            "B": "1000",
+            "C": "500",
+            "D": "823"
+          },
+          "correct": "A",
+          "difficulty": 2
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Kunst & Cultuur",
+      "icon": "🎨",
+      "color": "#FF00FF",
+      "questions": [
+        {
+          "id": 1,
+          "question": "Wie schilderde de Sterrennacht?",
+          "options": {
+            "A": "Pablo Picasso",
+            "B": "Vincent van Gogh",
+            "C": "Claude Monet",
+            "D": "Salvador Dalí"
+          },
+          "correct": "B",
+          "difficulty": 1
+        },
+        {
+          "id": 2,
+          "question": "In welk jaar was Mozart geboren?",
+          "options": {
+            "A": "1756",
+            "B": "1765",
+            "C": "1746",
+            "D": "1776"
+          },
+          "correct": "A",
+          "difficulty": 2
+        },
+        {
+          "id": 3,
+          "question": "Wat is het kleinste museum ter wereld?",
+          "options": {
+            "A": "Het Teapot Museum",
+            "B": "Het World's Tiniest Museum",
+            "C": "Het Mini Museum",
+            "D": "Varies per source"
+          },
+          "correct": "D",
+          "difficulty": 3
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Entertainment",
+      "icon": "🎬",
+      "color": "#FFAA00",
+      "questions": [
+        {
+          "id": 1,
+          "question": "Welk jaar kwam de eerste Harry Potter film uit?",
+          "options": {
+            "A": "1999",
+            "B": "2001",
+            "C": "2000",
+            "D": "2002"
+          },
+          "correct": "B",
+          "difficulty": 1
+        },
+        {
+          "id": 2,
+          "question": "Wie is de originele stem van Mickey Mouse?",
+          "options": {
+            "A": "Walt Disney",
+            "B": "Carl Barks",
+            "C": "Wayne Allwine",
+            "D": "Clarence Nash"
+          },
+          "correct": "A",
+          "difficulty": 2
+        },
+        {
+          "id": 3,
+          "question": "In welk land is het Filmfestival van Cannes?",
+          "options": {
+            "A": "Italië",
+            "B": "Frankrijk",
+            "C": "Spanje",
+            "D": "Duitsland"
+          },
+          "correct": "B",
+          "difficulty": 1
+        }
+      ]
+    }
+  ]
+}
