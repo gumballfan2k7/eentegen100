@@ -16,6 +16,11 @@ expressWs(app);
 app.use(cors());
 app.use(express.json());
 app.use(express.static(join(__dirname, 'public')));
+// Serve audio and graphics from repo root so public pages can reference them
+app.use('/audio', express.static(join(__dirname, 'audio')));
+app.use('/graphics', express.static(join(__dirname, 'graphics')));
+// Serve background.png directly
+app.get('/background.png', (req, res) => res.sendFile(join(__dirname, 'background.png')));
 
 const upload = multer({ dest: 'uploads/' });
 
